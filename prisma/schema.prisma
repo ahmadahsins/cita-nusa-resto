@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -65,19 +64,19 @@ model Table {
 }
 
 model Booking {
-  id            String          @id @default(uuid())
-  userId        String
-  user          User            @relation(fields: [userId], references: [id])
-  tableId       String
-  table         Table           @relation(fields: [tableId], references: [id])
-  dateTime      DateTime
-  duration      Int             @default(120) // dalam menit
-  guestCount    Int
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  tableId        String
+  table          Table         @relation(fields: [tableId], references: [id])
+  dateTime       DateTime
+  duration       Int           @default(120) // dalam menit
+  guestCount     Int
   specialRequest String?
-  status        BookingStatus   @default(PENDING)
-  orders        Order[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  status         BookingStatus @default(PENDING)
+  orders         Order[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 enum BookingStatus {
@@ -88,14 +87,14 @@ enum BookingStatus {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  bookingId String
-  booking   Booking     @relation(fields: [bookingId], references: [id])
-  items     OrderItem[]
+  id         String      @id @default(uuid())
+  bookingId  String
+  booking    Booking     @relation(fields: [bookingId], references: [id])
+  items      OrderItem[]
   totalPrice Float
-  status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model OrderItem {
