@@ -1,14 +1,15 @@
 import { verifyToken } from "@/lib/jwt";
+import { Role } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export interface UserData {
     id: string;
     email: string;
-    role: string;
+    role: Role;
 }
 
 export interface AuthenticatedRequest extends NextApiRequest {
-    user?: UserData;
+    user: UserData;
 }
 
 export function withAuth(

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "../../store/authStore";
 import { User, LogOut } from "lucide-react";
 import { playfair } from "@/pages/_app";
+import { toast } from "sonner";
 
 const Header: React.FC = () => {
     const { isAuthenticated, user, logout } = useAuthStore();
@@ -11,6 +12,7 @@ const Header: React.FC = () => {
     const handleLogout = () => {
         logout();
         router.push("/");
+        toast.success("Logout sukses");
     };
 
     return (
@@ -54,15 +56,15 @@ const Header: React.FC = () => {
                                 </Link>
                                 {user?.role === "ADMIN" && (
                                     <Link
-                                        href="/admin"
+                                        href="/admin/dashboard"
                                         className="hover:text-amber-200"
                                     >
-                                        Admin
+                                        Dashboard
                                     </Link>
                                 )}
                                 <button
                                     onClick={handleLogout}
-                                    className="bg-white hover:bg-white/80 text-red-500 hover:text-red-600 px-4 py-2 rounded inline-flex items-center gap-2"
+                                    className="bg-white hover:bg-gray-100 text-amber-900 py-2 px-2.5 rounded-md inline-flex items-center gap-2"
                                 >
                                     <LogOut size={20} />
                                     Logout

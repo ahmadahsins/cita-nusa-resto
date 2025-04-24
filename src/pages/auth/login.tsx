@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useAuthStore } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 
 const LoginSchema = z.object({
     email: z.string().email("Email tidak valid"),
@@ -34,6 +34,7 @@ const Login: NextPage = () => {
         onSuccess: (data) => {
             login(data.user, data.token);
             router.push("/");
+            toast.success("Login sukses");
         },
         onError: (error) => {
             console.log("Login error", error);
@@ -70,7 +71,6 @@ const Login: NextPage = () => {
                                 autoComplete="email"
                                 {...register("email")}
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
-                                placeholder="Email"
                             />
                             {formState.errors.email && (
                                 <p className="mt-1 text-sm text-red-600">
@@ -91,7 +91,6 @@ const Login: NextPage = () => {
                                 autoComplete="current-password"
                                 {...register("password")}
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
-                                placeholder="Email"
                             />
                             {formState.errors.password && (
                                 <p className="mt-1 text-sm text-red-600">

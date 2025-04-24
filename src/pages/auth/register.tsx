@@ -8,6 +8,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import z from "zod";
 
 const registerSchema = z
@@ -48,9 +49,11 @@ const Register: NextPage = () => {
         onSuccess: (data) => {
             login(data.user, data.token);
             router.push("/");
+            toast.success("Login sukses");
         },
         onError: (error) => {
             console.error("Registration error:", error);
+            toast.error("Register gagal");
         },
     });
 
