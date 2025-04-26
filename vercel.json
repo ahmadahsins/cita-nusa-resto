@@ -1,12 +1,3 @@
 {
-    "version": 2,
-    "buildCommand": "prisma generate && next build",
-    "functions": {
-        "api/*.js": {
-            "maxDuration": 30
-        }
-    },
-    "env": {
-        "PRISMA_CLIENT_ENGINE_TYPE": "dataproxy"
-    }
+    "buildCommand": "prisma generate && next build"
 }
