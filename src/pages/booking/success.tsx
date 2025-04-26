@@ -4,14 +4,11 @@ import Head from "next/head";
 // import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
-import { playfair } from "../_app";
 import Layout from "@/components/layout/Layout";
 import { CheckCircle } from "lucide-react";
 
 const BookingSuccessPage: NextPage = () => {
     const router = useRouter();
-
-    console.log(router.query);
 
     // If user directly navigates to success page without making a booking,
     // redirect them to the booking page
@@ -44,7 +41,7 @@ const BookingSuccessPage: NextPage = () => {
                         </div>
 
                         <h1
-                            className={`text-3xl md:text-4xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                            className={`text-3xl md:text-4xl font-extrabold text-amber-900 mb-4`}
                         >
                             Reservasi Berhasil!
                         </h1>

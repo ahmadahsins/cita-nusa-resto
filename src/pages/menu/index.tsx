@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { Menu, MenuCategory } from "@prisma/client";
-import { formatRupiah } from "@/utils";
-import { playfair } from "../_app";
 import Layout from "@/components/layout/Layout";
 import { useGetMenu } from "@/hooks/useGetMenu";
 import { useGetCategories } from "@/hooks/useGetCategories";
+import { playfair } from "../_app";
 
 interface MenuWithCategory extends Menu {
     category: MenuCategory;
@@ -15,6 +14,7 @@ interface MenuWithCategory extends Menu {
 
 const MenuPage: NextPage = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const [currentPage, setCurrentPage] = useState(1);
 
     const { data: menuItems, isLoading } = useGetMenu();
     const { data: categories } = useGetCategories();
@@ -26,6 +26,20 @@ const MenuPage: NextPage = () => {
                   (item: MenuWithCategory) =>
                       item.categoryId === selectedCategory
               );
+
+    const menuPerPage = 6;
+
+    const totalPages = Math.ceil(
+        (filteredMenuItems?.length as number) / menuPerPage
+    );
+    const paginatedMenuItems = filteredMenuItems?.slice(
+        (currentPage - 1) * menuPerPage,
+        currentPage * menuPerPage
+    );
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedCategory]);
 
     return (
         <Layout>
@@ -52,7 +66,7 @@ const MenuPage: NextPage = () => {
                 <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4">
                     <div className="max-w-3xl">
                         <h1
-                            className={`text-4xl md:text-5xl font-bold text-white mb-4 ${playfair.className}`}
+                            className={`text-4xl md:text-5xl font-extrabold text-white mb-4 ${playfair.className}`}
                         >
                             Menu Kami
                         </h1>
@@ -74,7 +88,7 @@ const MenuPage: NextPage = () => {
                         >
                             Pilih Kategori
                         </h2>
-                        <div className="flex flex-wrap justify-center gap-3">
+                        <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap gap-3 px-2 scrollbar-hide">
                             <button
                                 onClick={() => setSelectedCategory("all")}
                                 className={`px-5 py-2 rounded-md text-sm font-medium transition-colors 
@@ -114,16 +128,17 @@ const MenuPage: NextPage = () => {
                                 Memuat menu...
                             </p>
                         </div>
-                    ) : (filteredMenuItems as MenuWithCategory[]).length ===
+                    ) : (paginatedMenuItems as MenuWithCategory[]).length ===
                       0 ? (
                         <div className="text-center py-12">
-                            <p className="text-amber-800 text-lg">
-                                Tidak ada menu yang tersedia dalam kategori ini.
+                            <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-amber-600 border-t-transparent"></div>
+                            <p className="mt-4 text-amber-800">
+                                Memuat menu...
                             </p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {(filteredMenuItems as MenuWithCategory[]).map(
+                            {(paginatedMenuItems as MenuWithCategory[]).map(
                                 (menu) => (
                                     <div
                                         key={menu.id}
@@ -157,7 +172,9 @@ const MenuPage: NextPage = () => {
                                             </p>
                                             <div className="mt-4 flex items-center justify-between">
                                                 <span className="text-lg font-bold text-amber-700">
-                                                    {formatRupiah(menu.price)}
+                                                    {`Rp. ${menu.price.toLocaleString(
+                                                        "id-ID"
+                                                    )}`}
                                                 </span>
                                                 <span
                                                     className={`px-2 py-1 rounded text-xs ${
@@ -175,6 +192,65 @@ const MenuPage: NextPage = () => {
                                     </div>
                                 )
                             )}
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mt-6">
+                            <div className="text-sm text-gray-700">
+                                Menampilkan{" "}
+                                {(currentPage - 1) * menuPerPage + 1} -{" "}
+                                {currentPage * menuPerPage} dari{" "}
+                                {filteredMenuItems?.length} menu
+                            </div>
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={() =>
+                                        setCurrentPage(currentPage - 1)
+                                    }
+                                    disabled={currentPage === 1}
+                                    className={`px-3 py-1 rounded ${
+                                        currentPage === 1
+                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                                    }`}
+                                >
+                                    Sebelumnya
+                                </button>
+                                <div className="flex items-center space-x-1">
+                                    {Array.from({ length: totalPages }).map(
+                                        (_, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() =>
+                                                    setCurrentPage(idx + 1)
+                                                }
+                                                className={`px-3 py-1 rounded ${
+                                                    currentPage === idx + 1
+                                                        ? "bg-amber-500 text-white"
+                                                        : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                                                }`}
+                                            >
+                                                {idx + 1}
+                                            </button>
+                                        )
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() =>
+                                        setCurrentPage(currentPage + 1)
+                                    }
+                                    disabled={currentPage === totalPages}
+                                    className={`px-3 py-1 rounded ${
+                                        currentPage === totalPages
+                                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                                    }`}
+                                >
+                                    Selanjutnya
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

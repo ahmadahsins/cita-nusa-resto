@@ -3,12 +3,10 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "@/components/layout/Layout";
-import { playfair } from "../_app";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { toast } from "react-hot-toast";
-import { BookingStatus, Order } from "@prisma/client";
 import {
     Loader2,
     Calendar,
@@ -16,51 +14,14 @@ import {
     Users,
     MapPin,
     FileText,
-    X,
 } from "lucide-react";
 import Link from "next/link";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthStore } from "@/store/authStore";
-
-interface BookingDetail {
-    id: string;
-    dateTime: string;
-    status: BookingStatus;
-    guestCount: number;
-    specialRequest?: string;
-    duration: number;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    tableId: string;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        phone: string;
-    };
-    table: {
-        id: string;
-        tableNumber: number;
-        capacity: number;
-    };
-    orders: Order[];
-}
-
-const statusColors = {
-    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    CONFIRMED: "bg-green-100 text-green-800 border-green-200",
-    CANCELLED: "bg-red-100 text-red-800 border-red-200",
-    COMPLETED: "bg-blue-100 text-blue-800 border-blue-200",
-};
-
-const statusLabels = {
-    PENDING: "Menunggu Konfirmasi",
-    CONFIRMED: "Dikonfirmasi",
-    CANCELLED: "Dibatalkan",
-    COMPLETED: "Selesai",
-};
+import { statusColors, statusLabels } from "@/constants";
+import { BookingDetail } from "@/types";
+import CancelBookingModal from "@/components/modal/booking/CancelBookingModal";
 
 const BookingDetailPage: NextPage = () => {
     const router = useRouter();
@@ -142,7 +103,7 @@ const BookingDetailPage: NextPage = () => {
                     <div className="container mx-auto max-w-3xl">
                         <div className="bg-white p-8 rounded-lg shadow-md text-center">
                             <h1
-                                className={`text-2xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                                className={`text-2xl font-extrabold text-amber-900 mb-4`}
                             >
                                 Gagal Memuat Data
                             </h1>
@@ -170,6 +131,7 @@ const BookingDetailPage: NextPage = () => {
             (user?.role === "CUSTOMER" && user?.id !== booking?.userId))
     ) {
         router.push("/auth/login");
+        toast.error("Anda bukan pemilik reservasi ini");
         return null;
     }
 
@@ -191,12 +153,12 @@ const BookingDetailPage: NextPage = () => {
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                                 <div>
                                     <h1
-                                        className={`text-2xl font-bold text-white ${playfair.className}`}
+                                        className={`text-2xl font-extrabold text-white`}
                                     >
                                         Detail Reservasi
                                     </h1>
                                     <p className="text-amber-100 mt-1">
-                                        ID:{" "}
+                                        ID:
                                         {booking?.id
                                             .substring(0, 8)
                                             .toUpperCase()}
@@ -218,7 +180,7 @@ const BookingDetailPage: NextPage = () => {
                                 <div className="space-y-6">
                                     <div>
                                         <h2
-                                            className={`text-xl font-semibold text-amber-900 mb-4 ${playfair.className}`}
+                                            className={`text-xl font-bold text-amber-900 mb-4`}
                                         >
                                             Informasi Reservasi
                                         </h2>
@@ -305,7 +267,7 @@ const BookingDetailPage: NextPage = () => {
                                 <div className="space-y-6">
                                     <div>
                                         <h2
-                                            className={`text-xl font-semibold text-amber-900 mb-4 ${playfair.className}`}
+                                            className={`text-xl font-bold text-amber-900 mb-4`}
                                         >
                                             Informasi Pemesan
                                         </h2>
@@ -420,74 +382,12 @@ const BookingDetailPage: NextPage = () => {
 
             {/* Cancel Confirmation Modal */}
             {showCancelModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3
-                                className={`text-xl font-bold text-amber-900 ${playfair.className}`}
-                            >
-                                Konfirmasi Pembatalan
-                            </h3>
-                            <button
-                                onClick={() => setShowCancelModal(false)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <div className="mb-6">
-                            <p className="text-gray-700 mb-4">
-                                Apakah Anda yakin ingin membatalkan reservasi
-                                ini? Tindakan ini tidak dapat dibatalkan.
-                            </p>
-                            <div className="bg-yellow-50 p-3 rounded-md text-yellow-800 text-sm mb-2">
-                                <p>
-                                    Tanggal:{" "}
-                                    {format(
-                                        new Date(booking?.dateTime),
-                                        "dd MMMM yyyy",
-                                        { locale: localeId }
-                                    )}
-                                </p>
-                                <p>
-                                    Waktu:{" "}
-                                    {format(
-                                        new Date(booking?.dateTime),
-                                        "HH:mm",
-                                        { locale: localeId }
-                                    )}{" "}
-                                    WIB
-                                </p>
-                                <p>
-                                    Meja #{booking?.table.tableNumber} untuk{" "}
-                                    {booking?.guestCount} orang
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
-                            <button
-                                onClick={() => setShowCancelModal(false)}
-                                className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 py-2 px-4 rounded-md font-medium"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleCancelBooking}
-                                disabled={cancelBookingMutation.isPending}
-                                className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium flex items-center justify-center"
-                            >
-                                {cancelBookingMutation.isPending ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                        <span>Memproses...</span>
-                                    </>
-                                ) : (
-                                    "Ya, batalkan reservasi"
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <CancelBookingModal
+                    setShowCancelModal={setShowCancelModal}
+                    booking={booking}
+                    handleCancelBooking={handleCancelBooking}
+                    isPending={cancelBookingMutation.isPending}
+                />
             )}
         </Layout>
     );

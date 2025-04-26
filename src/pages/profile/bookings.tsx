@@ -3,11 +3,9 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "@/components/layout/Layout";
-import { playfair } from "../_app";
 import { useQuery } from "@tanstack/react-query";
 import { format, isAfter } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-// import { toast } from "react-hot-toast";
 import { BookingStatus } from "@prisma/client";
 import Link from "next/link";
 import {
@@ -21,46 +19,9 @@ import {
 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/hooks/useAuth";
-
-// Type for booking
-interface Booking {
-    id: string;
-    dateTime: string;
-    status: BookingStatus;
-    guestCount: number;
-    duration: number;
-    specialRequest?: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    tableId: string;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        phone: string;
-    };
-    table: {
-        id: string;
-        tableNumber: number;
-        capacity: number;
-    };
-}
-
-// Status colors and labels for booking status
-const statusColors = {
-    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    CONFIRMED: "bg-green-100 text-green-800 border-green-200",
-    CANCELLED: "bg-red-100 text-red-800 border-red-200",
-    COMPLETED: "bg-blue-100 text-blue-800 border-blue-200",
-};
-
-const statusLabels = {
-    PENDING: "Menunggu Konfirmasi",
-    CONFIRMED: "Dikonfirmasi",
-    CANCELLED: "Dibatalkan",
-    COMPLETED: "Selesai",
-};
+import { statusColors, statusFilters, statusLabels } from "@/constants";
+import { Booking } from "@/types";
+import { useAuthStore } from "@/store/authStore";
 
 // Status icon mapping
 const StatusIcon = ({ status }: { status: BookingStatus }) => {
@@ -78,18 +39,10 @@ const StatusIcon = ({ status }: { status: BookingStatus }) => {
     }
 };
 
-// Filter for booking status
-const statusFilters = [
-    { value: "", label: "Semua" },
-    { value: "PENDING", label: "Menunggu Konfirmasi" },
-    { value: "CONFIRMED", label: "Dikonfirmasi" },
-    { value: "CANCELLED", label: "Dibatalkan" },
-    { value: "COMPLETED", label: "Selesai" },
-];
-
 const ProfileBookingsPage: NextPage = () => {
     const router = useRouter();
     const { isAuthenticated, isHydrated } = useAuth();
+    const { user } = useAuthStore();
     const [statusFilter, setStatusFilter] = useState<string>("");
 
     // Fetch bookings
@@ -97,7 +50,7 @@ const ProfileBookingsPage: NextPage = () => {
         data: bookings,
         isLoading,
         error,
-        refetch,
+        // refetch,
     } = useQuery({
         queryKey: ["bookings", statusFilter],
         queryFn: async () => {
@@ -124,8 +77,10 @@ const ProfileBookingsPage: NextPage = () => {
                 "/auth/login?callbackUrl=" +
                     encodeURIComponent("/profile/bookings")
             );
+        } else if (user?.role !== "CUSTOMER") {
+            router.push("/profile");
         }
-    }, [isAuthenticated, isHydrated, router]);
+    }, [isAuthenticated, isHydrated, router, user]);
 
     // Group bookings by date
     const groupedBookings = () => {
@@ -174,12 +129,14 @@ const ProfileBookingsPage: NextPage = () => {
     };
 
     // Check if booking is upcoming
-    const isUpcoming = (booking: Booking) => {
-        return (
-            isAfter(new Date(booking.dateTime), new Date()) &&
-            (booking.status === "PENDING" || booking.status === "CONFIRMED")
-        );
-    };
+    // const isUpcoming = (booking: Booking) => {
+    //     return (
+    //         isAfter(new Date(booking.dateTime), new Date()) &&
+    //         (booking.status === "PENDING" || booking.status === "CONFIRMED")
+    //     );
+    // };
+
+    if (user?.role !== "CUSTOMER") return null;
 
     if (isLoading) {
         return (
@@ -211,7 +168,7 @@ const ProfileBookingsPage: NextPage = () => {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1
-                            className={`text-3xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                            className={`text-3xl font-extrabold text-amber-900 mb-4`}
                         >
                             Reservasi Saya
                         </h1>
@@ -451,9 +408,7 @@ const ProfileBookingsPage: NextPage = () => {
 
                     {/* Additional Info */}
                     <div className="mt-10 bg-white p-6 rounded-lg shadow-md">
-                        <h3
-                            className={`text-xl font-semibold text-amber-900 mb-4 ${playfair.className}`}
-                        >
+                        <h3 className={`text-xl font-bold text-amber-900 mb-4`}>
                             Informasi Reservasi
                         </h3>
                         <div className="space-y-4 text-gray-700">

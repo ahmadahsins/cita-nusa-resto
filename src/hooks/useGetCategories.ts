@@ -6,7 +6,7 @@ export const useGetCategories = () => {
     return useQuery({
         queryKey: ["categories"],
         queryFn: async () => {
-            const response = await axiosInstance.get("/menu/categories");
+            const response = await axiosInstance.get("/menus/categories");
             return response.data.data as MenuCategory[];
         },
     });

@@ -4,8 +4,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { useQuery } from "@tanstack/react-query";
-import { Booking, BookingStatus } from "@prisma/client";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { BookingStatus } from "@prisma/client";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -23,20 +23,7 @@ import axiosInstance from "@/lib/axios";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/hooks/useAuth";
 import AdminLayout from "@/components/layout/admin/AdminLayout";
-
-type BookingWithRelations = Booking & {
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        phone: string | null;
-    };
-    table: {
-        id: string;
-        tableNumber: number;
-        capacity: number;
-    };
-};
+import { BookingWithRelations } from "@/types";
 
 const statusLabels: Record<BookingStatus, { label: string; color: string }> = {
     PENDING: { label: "Menunggu", color: "bg-yellow-100 text-yellow-800" },
@@ -56,6 +43,10 @@ const AdminBookingsPage: NextPage = () => {
     );
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [isLoadingConfirm, setIsLoadingConfirm] = useState(false);
+    const [isLoadingFinish, setIsLoadingFinish] = useState(false);
+    const [isLoadingCancel, setIsLoadingCancel] = useState(false);
+
     const itemsPerPage = 10;
 
     // Fetch bookings
@@ -92,29 +83,45 @@ const AdminBookingsPage: NextPage = () => {
         enabled: isAuthenticated && isHydrated,
     });
 
-    // Handle status change
-    const handleStatusChange = async (
-        bookingId: string,
-        newStatus: BookingStatus
-    ) => {
-        try {
+    const { mutate, isPending } = useMutation({
+        mutationFn: async (data: {
+            bookingId: string;
+            newStatus: BookingStatus;
+        }) => {
             const response = await axiosInstance.patch(
-                `/bookings/${bookingId}`,
+                `/bookings/${data.bookingId}`,
                 {
-                    status: newStatus,
+                    status: data.newStatus,
                 }
             );
 
-            if (response.status === 200) {
-                toast.success(
-                    `Status reservasi berhasil diubah ke ${statusLabels[newStatus].label}`
-                );
-                refetch();
-            }
-        } catch (error) {
+            return response.data;
+        },
+        onSuccess: (data: { status: BookingStatus }) => {
+            toast.success(
+                `Status reservasi berhasil diubah ke ${
+                    statusLabels[data.status].label
+                }`
+            );
+            refetch();
+        },
+        onError: (error) => {
             console.error("Error updating booking status:", error);
             toast.error("Gagal mengubah status reservasi");
-        }
+        },
+        onSettled: () => {
+            if (isLoadingConfirm) setIsLoadingConfirm(false);
+            else if (isLoadingFinish) setIsLoadingFinish(false);
+            else if (isLoadingCancel) setIsLoadingCancel(false);
+        },
+    });
+
+    // Handle status change
+    const handleStatusChange = (
+        bookingId: string,
+        newStatus: BookingStatus
+    ) => {
+        mutate({ bookingId, newStatus });
     };
 
     // Filter bookings based on search term
@@ -171,7 +178,7 @@ const AdminBookingsPage: NextPage = () => {
                         className="px-4 py-2 bg-amber-100 text-amber-800 rounded-md hover:bg-amber-200 inline-flex items-center"
                     >
                         <Clock className="h-4 w-4 mr-2" />
-                        Kembali ke Dasbor
+                        Kembali ke Dashboard
                     </Link>
                 </div>
 
@@ -183,7 +190,7 @@ const AdminBookingsPage: NextPage = () => {
                             Filter Tanggal
                         </label>
                         <div className="flex items-center">
-                            <div className="relative flex-grow text-amber-800">
+                            <div className="relative flex-grow text-black">
                                 <DatePicker
                                     selected={filterDate}
                                     onChange={(date) => setFilterDate(date)}
@@ -217,7 +224,7 @@ const AdminBookingsPage: NextPage = () => {
                                         e.target.value as BookingStatus | "ALL"
                                     )
                                 }
-                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 pl-10 text-amber-800"
+                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 pl-10 text-black"
                             >
                                 <option value="ALL">Semua Status</option>
                                 <option value="PENDING">Menunggu</option>
@@ -234,7 +241,7 @@ const AdminBookingsPage: NextPage = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Cari Reservasi
                         </label>
-                        <div className="relative text-amber-800">
+                        <div className="relative text-black">
                             <input
                                 type="text"
                                 value={searchTerm}
@@ -359,30 +366,48 @@ const AdminBookingsPage: NextPage = () => {
 
                                             {booking.status === "PENDING" && (
                                                 <button
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         handleStatusChange(
                                                             booking.id,
                                                             "CONFIRMED"
-                                                        )
-                                                    }
+                                                        );
+                                                        setIsLoadingConfirm(
+                                                            true
+                                                        );
+                                                    }}
+                                                    disabled={isPending}
                                                     className="inline-flex items-center px-2.5 py-1.5 bg-green-50 text-green-800 rounded hover:bg-green-100"
                                                 >
-                                                    <Check className="h-4 w-4 mr-1" />
+                                                    {isPending &&
+                                                    isLoadingConfirm ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <Check className="h-4 w-4 mr-1" />
+                                                    )}
                                                     Konfirmasi
                                                 </button>
                                             )}
 
                                             {booking.status === "CONFIRMED" && (
                                                 <button
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         handleStatusChange(
                                                             booking.id,
                                                             "COMPLETED"
-                                                        )
-                                                    }
+                                                        );
+                                                        setIsLoadingFinish(
+                                                            true
+                                                        );
+                                                    }}
+                                                    disabled={isPending}
                                                     className="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-800 rounded hover:bg-blue-100"
                                                 >
-                                                    <UserCheck className="h-4 w-4 mr-1" />
+                                                    {isPending &&
+                                                    isLoadingFinish ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <UserCheck className="h-4 w-4 mr-1" />
+                                                    )}
                                                     Selesai
                                                 </button>
                                             )}
@@ -391,15 +416,24 @@ const AdminBookingsPage: NextPage = () => {
                                                 booking.status ===
                                                     "CONFIRMED") && (
                                                 <button
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         handleStatusChange(
                                                             booking.id,
                                                             "CANCELLED"
-                                                        )
-                                                    }
+                                                        );
+                                                        setIsLoadingCancel(
+                                                            true
+                                                        );
+                                                    }}
+                                                    disabled={isPending}
                                                     className="inline-flex items-center px-2.5 py-1.5 bg-red-50 text-red-800 rounded hover:bg-red-100"
                                                 >
-                                                    <X className="h-4 w-4 mr-1" />
+                                                    {isPending &&
+                                                    isLoadingCancel ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <X className="h-4 w-4 mr-1" />
+                                                    )}
                                                     Batalkan
                                                 </button>
                                             )}
@@ -421,7 +455,7 @@ const AdminBookingsPage: NextPage = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-6">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mt-6">
                         <div className="text-sm text-gray-700">
                             Menampilkan {(currentPage - 1) * itemsPerPage + 1} -{" "}
                             {Math.min(

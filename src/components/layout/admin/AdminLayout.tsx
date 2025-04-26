@@ -1,20 +1,10 @@
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-    LayoutDashboard,
-    Users,
-    BookOpen,
-    CalendarClock,
-    ShoppingCart,
-    Table2,
-    Settings,
-    LogOut,
-    Menu as MenuIcon,
-    X,
-} from "lucide-react";
+import { LogOut, Menu as MenuIcon, X } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { playfair } from "@/pages/_app";
+import { dashboardNavItems } from "@/constants";
 
 interface AdminLayoutProps {
     children: ReactNode;
@@ -28,44 +18,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     const isActive = (path: string) => {
         return router.pathname.startsWith(path);
     };
-
-    const navItems = [
-        {
-            title: "Dashboard",
-            href: "/admin/dashboard",
-            icon: <LayoutDashboard className="h-5 w-5" />,
-        },
-        {
-            title: "Pengguna",
-            href: "/admin/users",
-            icon: <Users className="h-5 w-5" />,
-        },
-        {
-            title: "Menu",
-            href: "/admin/menu",
-            icon: <BookOpen className="h-5 w-5" />,
-        },
-        {
-            title: "Reservasi",
-            href: "/admin/bookings",
-            icon: <CalendarClock className="h-5 w-5" />,
-        },
-        {
-            title: "Pesanan",
-            href: "/admin/orders",
-            icon: <ShoppingCart className="h-5 w-5" />,
-        },
-        {
-            title: "Meja",
-            href: "/admin/tables",
-            icon: <Table2 className="h-5 w-5" />,
-        },
-        {
-            title: "Pengaturan",
-            href: "/admin/settings",
-            icon: <Settings className="h-5 w-5" />,
-        },
-    ];
 
     const handleLogout = async () => {
         await logout();
@@ -93,7 +45,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                     {/* Navigation */}
                     <div className="flex-1 px-4 py-6 overflow-y-auto">
                         <nav className="space-y-1">
-                            {navItems.map((item) => (
+                            {dashboardNavItems.map((item) => (
                                 <Link
                                     key={item.href}
                                     href={item.href}
@@ -199,7 +151,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
                         <div className="flex-1 px-4 py-6 overflow-y-auto">
                             <nav className="space-y-1">
-                                {navItems.map((item) => (
+                                {dashboardNavItems.map((item) => (
                                     <Link
                                         key={item.href}
                                         href={item.href}

@@ -1,7 +1,6 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { playfair } from "../_app";
 import Layout from "@/components/layout/Layout";
 
 const BookingPage: NextPage = () => {

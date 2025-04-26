@@ -1,4 +1,4 @@
-import AuthCard from "@/components/auth/AuthCard";
+import AuthCard from "@/components/card/auth/AuthCard";
 import axiosInstance from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";

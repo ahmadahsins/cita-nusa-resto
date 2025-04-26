@@ -2,278 +2,31 @@ import { useState, useEffect } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
-    // Calendar,
-    // Check,
     Edit,
     Loader2,
     PlusCircle,
     Search,
     Trash2,
     Users,
-    X,
     Table2,
     Clock,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-hot-toast";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/hooks/useAuth";
 import AdminLayout from "@/components/layout/admin/AdminLayout";
-import { queryClient } from "@/lib/queryCLient";
+import TableFormModal from "@/components/modal/table/TableFormModal";
+import DeleteConfirmationModal from "@/components/modal/table/DeleteConfirmationModal";
 
 // Define Table type
-type Table = {
+export type Table = {
     id: string;
     tableNumber: number;
     capacity: number;
     isAvailable: boolean;
     createdAt: string;
     updatedAt: string;
-};
-
-// Form schema for table creation and editing
-const tableSchema = z.object({
-    tableNumber: z.coerce.number().positive("Nomor meja harus positif"),
-    capacity: z.coerce.number().positive("Kapasitas harus positif"),
-    isAvailable: z.boolean().default(true),
-});
-
-type TableFormValues = z.infer<typeof tableSchema>;
-
-// Modal component for adding/editing tables
-const TableFormModal = ({
-    isOpen,
-    onClose,
-    table,
-    isEditing,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    table?: Table;
-    isEditing: boolean;
-}) => {
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-    } = useForm<TableFormValues>({
-        resolver: zodResolver(tableSchema),
-        defaultValues:
-            isEditing && table
-                ? {
-                      tableNumber: table.tableNumber,
-                      capacity: table.capacity,
-                      isAvailable: table.isAvailable,
-                  }
-                : {
-                      tableNumber: undefined,
-                      capacity: undefined,
-                      isAvailable: true,
-                  },
-    });
-
-    // Reset form when modal opens/closes
-    useEffect(() => {
-        if (isOpen) {
-            reset(
-                isEditing && table
-                    ? {
-                          tableNumber: table.tableNumber,
-                          capacity: table.capacity,
-                          isAvailable: table.isAvailable,
-                      }
-                    : {
-                          tableNumber: undefined,
-                          capacity: undefined,
-                          isAvailable: true,
-                      }
-            );
-        }
-    }, [isOpen, reset, table, isEditing]);
-
-    // Create table mutation
-    const createTableMutation = useMutation({
-        mutationFn: async (data: TableFormValues) => {
-            const response = await axiosInstance.post("/tables", data);
-            return response.data;
-        },
-        onSuccess: () => {
-            toast.success("Meja berhasil ditambahkan");
-            queryClient.invalidateQueries({ queryKey: ["tables"] });
-            onClose();
-        },
-        onError: () => {
-            toast.error("Gagal menambahkan meja");
-        },
-    });
-
-    // Update table mutation
-    const updateTableMutation = useMutation({
-        mutationFn: async (data: TableFormValues) => {
-            const response = await axiosInstance.patch(
-                `/tables/${table?.id}`,
-                data
-            );
-            return response.data;
-        },
-        onSuccess: () => {
-            toast.success("Meja berhasil diperbarui");
-            queryClient.invalidateQueries({ queryKey: ["tables"] });
-            onClose();
-        },
-        onError: () => {
-            toast.error("Gagal memperbarui meja");
-        },
-    });
-
-    const onSubmit: (data) => void = (data: TableFormValues) => {
-        if (isEditing && table) {
-            updateTableMutation.mutate(data);
-        } else {
-            createTableMutation.mutate(data);
-        }
-    };
-
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg w-full max-w-md">
-                <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold text-amber-900">
-                            {isEditing ? "Edit Meja" : "Tambah Meja Baru"}
-                        </h2>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                            <X className="h-5 w-5" />
-                        </button>
-                    </div>
-
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nomor Meja
-                            </label>
-                            <input
-                                type="number"
-                                {...register("tableNumber")}
-                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                placeholder="Masukkan nomor meja"
-                            />
-                            {errors.tableNumber && (
-                                <p className="mt-1 text-sm text-red-600">
-                                    {errors.tableNumber.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Kapasitas
-                            </label>
-                            <input
-                                type="number"
-                                {...register("capacity")}
-                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                                placeholder="Masukkan kapasitas meja"
-                            />
-                            {errors.capacity && (
-                                <p className="mt-1 text-sm text-red-600">
-                                    {errors.capacity.message}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="mb-6 flex items-center">
-                            <input
-                                type="checkbox"
-                                id="isAvailable"
-                                {...register("isAvailable")}
-                                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
-                            />
-                            <label
-                                htmlFor="isAvailable"
-                                className="ml-2 block text-sm text-gray-700"
-                            >
-                                Meja tersedia
-                            </label>
-                        </div>
-
-                        <div className="flex justify-end space-x-3">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 flex items-center"
-                            >
-                                {isSubmitting && (
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                )}
-                                {isEditing ? "Perbarui" : "Tambah"} Meja
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// Delete confirmation modal
-const DeleteConfirmationModal = ({
-    isOpen,
-    onClose,
-    table,
-    onConfirm,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-    table?: Table;
-    onConfirm: () => void;
-}) => {
-    if (!isOpen) return null;
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg w-full max-w-md p-6">
-                <h2 className="text-xl font-bold text-red-600 mb-4">
-                    Konfirmasi Hapus
-                </h2>
-                <p className="text-gray-700 mb-6">
-                    Apakah Anda yakin ingin menghapus Meja #{table?.tableNumber}
-                    ? Tindakan ini tidak bisa dibatalkan.
-                </p>
-                <div className="flex justify-end space-x-3">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                    >
-                        Hapus
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
 };
 
 const AdminTablesPage: NextPage = () => {
@@ -292,31 +45,17 @@ const AdminTablesPage: NextPage = () => {
     const itemsPerPage = 10;
 
     // Fetch tables data
-    const { data: tables, isLoading } = useQuery<Table[]>({
+    const {
+        data: tables,
+        isLoading,
+        refetch,
+    } = useQuery<Table[]>({
         queryKey: ["tables"],
         queryFn: async () => {
             const response = await axiosInstance.get("/tables");
             return response.data;
         },
         enabled: isAuthenticated,
-    });
-
-    // Delete table mutation
-    const deleteTableMutation = useMutation({
-        mutationFn: async () => {
-            const response = await axiosInstance.delete(
-                `/tables/${selectedTable?.id}`
-            );
-            return response.data;
-        },
-        onSuccess: () => {
-            toast.success("Meja berhasil dihapus");
-            queryClient.invalidateQueries({ queryKey: ["tables"] });
-            setIsDeleteModalOpen(false);
-        },
-        onError: () => {
-            toast.error("Gagal menghapus meja");
-        },
     });
 
     // Filter tables based on search term
@@ -329,13 +68,6 @@ const AdminTablesPage: NextPage = () => {
             table.capacity.toString().includes(searchLower)
         );
     });
-
-    // Handle confirm delete
-    const handleConfirmDelete = () => {
-        if (selectedTable) {
-            deleteTableMutation.mutate();
-        }
-    };
 
     // Handle edit table
     const handleEditTable = (table: Table) => {
@@ -381,7 +113,7 @@ const AdminTablesPage: NextPage = () => {
                         className="px-4 py-2 bg-amber-100 text-amber-800 rounded-md hover:bg-amber-200 inline-flex items-center"
                     >
                         <Clock className="h-4 w-4 mr-2" />
-                        Kembali ke Dasbor
+                        Kembali ke Dashboard
                     </Link>
                 </div>
 
@@ -520,7 +252,7 @@ const AdminTablesPage: NextPage = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-6">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mt-6">
                         <div className="text-sm text-gray-700">
                             Menampilkan {(currentPage - 1) * itemsPerPage + 1} -{" "}
                             {Math.min(
@@ -581,6 +313,7 @@ const AdminTablesPage: NextPage = () => {
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 isEditing={false}
+                refetch={refetch}
             />
 
             {/* Edit Table Modal */}
@@ -589,14 +322,15 @@ const AdminTablesPage: NextPage = () => {
                 onClose={() => setIsEditModalOpen(false)}
                 table={selectedTable}
                 isEditing={true}
+                refetch={refetch}
             />
 
             {/* Delete Confirmation Modal */}
             <DeleteConfirmationModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
+                isDeleteModalOpen={isDeleteModalOpen}
+                setIsDeleteModalOpen={setIsDeleteModalOpen}
                 table={selectedTable}
-                onConfirm={handleConfirmDelete}
+                refetch={refetch}
             />
         </AdminLayout>
     );

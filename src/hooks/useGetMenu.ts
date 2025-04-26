@@ -10,7 +10,7 @@ export const useGetMenu = () => {
     return useQuery({
         queryKey: ["menu"],
         queryFn: async () => {
-            const response = await axiosInstance.get("/menu");
+            const response = await axiosInstance.get("/menus");
             return response.data.data as MenuWithCategory[];
         },
     });
