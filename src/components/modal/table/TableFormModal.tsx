@@ -12,7 +12,7 @@ import { z } from "zod";
 const tableSchema = z.object({
     tableNumber: z.coerce.number().positive("Nomor meja harus positif"),
     capacity: z.coerce.number().positive("Kapasitas harus positif"),
-    isAvailable: z.boolean().default(true),
+    isAvailable: z.boolean(),
 });
 
 type TableFormValues = z.infer<typeof tableSchema>;
