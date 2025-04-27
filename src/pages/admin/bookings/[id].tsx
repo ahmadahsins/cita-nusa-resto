@@ -60,8 +60,8 @@ const AdminBookingDetailPage: NextPage = () => {
         onSuccess: (data) => {
             toast.success(
                 `Status reservasi berhasil diubah ke ${
-                    statusLabels[data.status]
-                }`
+                    statusLabels[data.status].label
+                } dan email konfirmasi telah dikirim ke pelanggan`
             );
             refetch();
         },

@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { NextApiResponse } from "next";
 import { AuthenticatedRequest, withRole } from "../middleware/auth";
 import { BookingStatus } from "@prisma/client";
+import { sendBookingConfirmationEmail } from "@/service/emailService";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     const { id } = req.query;
@@ -166,6 +167,26 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
                     table: true,
                 },
             });
+
+            if (status === "CONFIRMED") {
+                try {
+                    const emailResult = await sendBookingConfirmationEmail({
+                        booking: updatedBooking,
+                    });
+
+                    if (!emailResult.success) {
+                        console.warn(
+                            "Email could not be sent but booking was updated:",
+                            emailResult.error
+                        );
+                    } else {
+                        console.log("Email sent successfully");
+                    }
+                } catch (error) {
+                    console.error("Error sending confirmation email:", error);
+                    // Continue with response as booking was successfully updated
+                }
+            }
 
             return res.status(200).json(updatedBooking);
         } catch (error) {

@@ -61,6 +61,8 @@ export type BookingWithRelations = Booking & {
         id: string;
         tableNumber: number;
         capacity: number;
+        createdAt?: Date;
+        updatedAt?: Date;
     };
 };
 

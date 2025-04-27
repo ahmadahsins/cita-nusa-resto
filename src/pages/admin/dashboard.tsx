@@ -1,7 +1,6 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import {
@@ -16,13 +15,12 @@ import {
     Home,
 } from "lucide-react";
 import AdminLayout from "@/components/layout/admin/AdminLayout";
-import axiosInstance from "@/lib/axios";
-import { useAuth } from "@/hooks/useAuth";
-import { DashboardStats } from "@/types";
 import StatCard from "@/components/card/admin/StatCard";
 import ChartCard from "@/components/card/admin/ChartCard";
 import RecentBooking from "@/components/card/admin/RecentBooking";
 import RecentOrder from "@/components/card/admin/RecentOrder";
+import { useAuth } from "@/hooks/useAuth";
+import { useGetDashboardStats } from "@/hooks/useGetDashboardStats";
 
 const AdminDashboardPage: NextPage = () => {
     const { isAuthenticated } = useAuth(
@@ -30,22 +28,8 @@ const AdminDashboardPage: NextPage = () => {
     );
 
     // Fetch dashboard stats
-    const { data: dashboardStats, isLoading } = useQuery<DashboardStats>({
-        queryKey: ["dashboardStats"],
-        queryFn: async () => {
-            const response = await axiosInstance.get("/admin/dashboard-stats");
-            return response.data.data;
-        },
-        enabled: isAuthenticated,
-        placeholderData: {
-            totalUsers: 0,
-            totalBookings: 0,
-            totalOrders: 0,
-            totalMenuItems: 0,
-            totalTables: 0,
-            recentBookings: [],
-            recentOrders: [],
-        },
+    const { data: dashboardStats, isLoading } = useGetDashboardStats({
+        isAuthenticated,
     });
 
     return (
