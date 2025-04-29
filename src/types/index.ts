@@ -129,4 +129,6 @@ export interface DashboardStats {
         status: string;
     }>;
     recentOrders: Order[];
+    bookingsPerDay: { date: string; count: number }[]; // Data untuk chart reservasi
+    ordersPerDay: { date: string; count: number }[]; // Data untuk chart pesanan
 }

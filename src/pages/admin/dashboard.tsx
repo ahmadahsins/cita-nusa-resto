@@ -4,7 +4,6 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import {
-    BarChart3,
     BookOpen,
     ChevronRight,
     Users,
@@ -22,6 +21,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGetDashboardStats } from "@/hooks/useGetDashboardStats";
 import RecentOrder from "@/components/card/admin/RecentOrder";
 import { calculateOrderTotal } from "@/utils";
+import BookingsChart from "@/components/chart/BookingsChart";
+import OrdersChart from "@/components/chart/OrdersChart";
 
 const AdminDashboardPage: NextPage = () => {
     const { isAuthenticated } = useAuth(
@@ -117,27 +118,40 @@ const AdminDashboardPage: NextPage = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         {/* Chart - Bookings per day */}
                         <ChartCard title="Reservasi per Hari">
-                            <div className="flex items-center justify-center h-64 bg-gray-50 rounded">
-                                <div className="text-center">
-                                    <BarChart3 className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-                                    <p className="text-gray-500">
-                                        Grafik reservasi akan ditampilkan di
-                                        sini
-                                    </p>
+                            {dashboardStats?.bookingsPerDay ? (
+                                <div className="h-64">
+                                    <BookingsChart
+                                        data={dashboardStats.bookingsPerDay}
+                                    />
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="flex items-center justify-center h-64 bg-gray-50 rounded">
+                                    <div className="text-center">
+                                        <p className="text-gray-500">
+                                            Tidak ada data reservasi
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </ChartCard>
 
                         {/* Chart - Orders per day */}
                         <ChartCard title="Pesanan per Hari">
-                            <div className="flex items-center justify-center h-64 bg-gray-50 rounded">
-                                <div className="text-center">
-                                    <BarChart3 className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-                                    <p className="text-gray-500">
-                                        Grafik pesanan akan ditampilkan di sini
-                                    </p>
+                            {dashboardStats?.ordersPerDay ? (
+                                <div className="h-64">
+                                    <OrdersChart
+                                        data={dashboardStats.ordersPerDay}
+                                    />
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="flex items-center justify-center h-64 bg-gray-50 rounded">
+                                    <div className="text-center">
+                                        <p className="text-gray-500">
+                                            Tidak ada data pesanan
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </ChartCard>
                     </div>
 

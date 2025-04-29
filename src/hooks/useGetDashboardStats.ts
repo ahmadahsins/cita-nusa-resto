@@ -22,6 +22,8 @@ export const useGetDashboardStats = ({
             totalTables: 0,
             recentBookings: [],
             recentOrders: [],
+            bookingsPerDay: [],
+            ordersPerDay: [],
         },
     });
 };
