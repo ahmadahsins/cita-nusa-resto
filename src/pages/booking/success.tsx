@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { CheckCircle } from "lucide-react";
+import BookingInfo from "@/components/info";
 
 const BookingSuccessPage: NextPage = () => {
     const router = useRouter();
@@ -52,50 +53,7 @@ const BookingSuccessPage: NextPage = () => {
                             dan akan segera mengkonfirmasi.
                         </p>
 
-                        <div className="bg-amber-50 p-6 rounded-lg mb-8">
-                            <h2 className="text-xl font-semibold text-amber-800 mb-4">
-                                Informasi Penting
-                            </h2>
-                            <ul className="text-gray-700 space-y-2 text-left">
-                                <li className="flex items-start">
-                                    <span className="text-amber-600 mr-2">
-                                        •
-                                    </span>
-                                    <span>
-                                        Konfirmasi reservasi akan dikirimkan
-                                        melalui email.
-                                    </span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-amber-600 mr-2">
-                                        •
-                                    </span>
-                                    <span>
-                                        Mohon datang 10 menit sebelum waktu
-                                        reservasi.
-                                    </span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-amber-600 mr-2">
-                                        •
-                                    </span>
-                                    <span>
-                                        Jika Anda ingin membatalkan atau
-                                        mengubah reservasi, silakan lakukan
-                                        minimal 3 jam sebelum waktu reservasi.
-                                    </span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="text-amber-600 mr-2">
-                                        •
-                                    </span>
-                                    <span>
-                                        Meja akan ditahan selama 15 menit dari
-                                        waktu reservasi.
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
+                        <BookingInfo />
 
                         <p className="text-gray-700 mb-8">
                             Anda dapat melihat dan mengelola reservasi Anda di

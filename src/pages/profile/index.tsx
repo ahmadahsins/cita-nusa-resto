@@ -76,7 +76,7 @@ const Profile: NextPage = () => {
                     </div>
 
                     {/* Profile Navigation Tabs */}
-                    {user?.role === "CUSTOMER" && (
+                    {isHydrated && user?.role === "CUSTOMER" && (
                         <div className="flex flex-wrap justify-center mb-8 gap-4">
                             <Link
                                 href="/profile"

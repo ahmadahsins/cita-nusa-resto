@@ -25,6 +25,19 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
         const recentOrders = await prisma.order.findMany({
             take: 5,
+            include: {
+                items: {
+                    include: {
+                        menu: true,
+                    },
+                },
+                booking: {
+                    include: {
+                        user: true,
+                        table: true,
+                    },
+                },
+            },
             orderBy: {
                 createdAt: "desc",
             },

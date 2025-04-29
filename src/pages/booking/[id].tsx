@@ -22,6 +22,7 @@ import { useAuthStore } from "@/store/authStore";
 import { statusColors, statusLabels } from "@/constants";
 import { BookingDetail } from "@/types";
 import CancelBookingModal from "@/components/modal/booking/CancelBookingModal";
+import BookingInfo from "@/components/info";
 
 const BookingDetailPage: NextPage = () => {
     const router = useRouter();
@@ -175,7 +176,7 @@ const BookingDetailPage: NextPage = () => {
                         </div>
 
                         {/* Booking Details */}
-                        <div className="p-6">
+                        <div className="p-6 space-y-3">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-6">
                                     <div>
@@ -318,44 +319,7 @@ const BookingDetailPage: NextPage = () => {
                             </div>
 
                             {/* Booking Info */}
-                            <div className="mt-8 pt-6 border-t border-gray-200">
-                                <div className="bg-amber-50 p-4 rounded-md">
-                                    <h3 className="font-medium text-amber-800 mb-2">
-                                        Informasi Penting:
-                                    </h3>
-                                    <ul className="text-gray-700 space-y-2 text-sm">
-                                        <li className="flex items-start">
-                                            <span className="text-amber-600 mr-2">
-                                                •
-                                            </span>
-                                            <span>
-                                                Mohon datang 10 menit sebelum
-                                                waktu reservasi.
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <span className="text-amber-600 mr-2">
-                                                •
-                                            </span>
-                                            <span>
-                                                Jika Anda ingin membatalkan atau
-                                                mengubah reservasi, silakan
-                                                lakukan minimal 3 jam sebelum
-                                                waktu reservasi.
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start">
-                                            <span className="text-amber-600 mr-2">
-                                                •
-                                            </span>
-                                            <span>
-                                                Meja akan ditahan selama 15
-                                                menit dari waktu reservasi.
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <BookingInfo booking={booking} />
 
                             {/* Action Buttons */}
                             <div className="mt-8 flex flex-col sm:flex-row gap-4">

@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { statusColors, statusFilters, statusLabels } from "@/constants";
 import { Booking } from "@/types";
 import { useAuthStore } from "@/store/authStore";
+import BookingInfo from "@/components/info";
 
 // Status icon mapping
 const StatusIcon = ({ status }: { status: BookingStatus }) => {
@@ -77,7 +78,7 @@ const ProfileBookingsPage: NextPage = () => {
                 "/auth/login?callbackUrl=" +
                     encodeURIComponent("/profile/bookings")
             );
-        } else if (user?.role !== "CUSTOMER") {
+        } else if (isHydrated && user?.role !== "CUSTOMER") {
             router.push("/profile");
         }
     }, [isAuthenticated, isHydrated, router, user]);
@@ -164,7 +165,7 @@ const ProfileBookingsPage: NextPage = () => {
             </Head>
 
             <section className="py-12 px-4 bg-amber-50 min-h-screen">
-                <div className="container mx-auto max-w-4xl">
+                <div className="container mx-auto max-w-4xl space-y-8">
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1
@@ -407,43 +408,7 @@ const ProfileBookingsPage: NextPage = () => {
                     )}
 
                     {/* Additional Info */}
-                    <div className="mt-10 bg-white p-6 rounded-lg shadow-md">
-                        <h3 className={`text-xl font-bold text-amber-900 mb-4`}>
-                            Informasi Reservasi
-                        </h3>
-                        <div className="space-y-4 text-gray-700">
-                            <div className="flex items-start">
-                                <span className="text-amber-600 mr-2">•</span>
-                                <span>
-                                    Pembatalan reservasi dapat dilakukan minimal
-                                    3 jam sebelum waktu reservasi.
-                                </span>
-                            </div>
-                            <div className="flex items-start">
-                                <span className="text-amber-600 mr-2">•</span>
-                                <span>
-                                    Mohon datang 10 menit sebelum waktu
-                                    reservasi untuk memastikan meja Anda.
-                                </span>
-                            </div>
-                            <div className="flex items-start">
-                                <span className="text-amber-600 mr-2">•</span>
-                                <span>
-                                    Meja akan ditahan selama 15 menit dari waktu
-                                    reservasi. Setelah itu, meja dapat diberikan
-                                    kepada tamu lain.
-                                </span>
-                            </div>
-                            <div className="flex items-start">
-                                <span className="text-amber-600 mr-2">•</span>
-                                <span>
-                                    Untuk perubahan jumlah tamu atau waktu
-                                    reservasi, silakan hubungi kami melalui
-                                    telepon di (021) 123-4567.
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    <BookingInfo bookings={bookings} />
                 </div>
             </section>
         </Layout>

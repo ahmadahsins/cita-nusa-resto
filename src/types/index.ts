@@ -1,4 +1,4 @@
-import { BookingStatus, Order } from "@prisma/client";
+import { BookingStatus, Menu, OrderStatus } from "@prisma/client";
 
 export interface BookingDetail {
     id: string;
@@ -66,6 +66,53 @@ export type BookingWithRelations = Booking & {
     };
 };
 
+export type MenuItem = Menu & {
+    category: {
+        id: string;
+        name: string;
+        createdAt?: Date;
+        updatedAt?: Date;
+    };
+};
+
+export type Order = {
+    id: string;
+    status: OrderStatus;
+    createdAt: string;
+    updatedAt: string;
+    booking: {
+        id: string;
+        dateTime: string;
+        guestCount: number;
+        table: {
+            id: string;
+            tableNumber: number;
+            capacity: number;
+        };
+        user: {
+            id: string;
+            name: string;
+            email: string;
+            phone: string;
+        };
+    };
+    items: OrderItem[];
+};
+
+export type OrderItem = {
+    id: string;
+    quantity: number;
+    notes?: string;
+    menu: {
+        id: string;
+        name: string;
+        price: number;
+        description: string;
+        image: string;
+        isAvailable: boolean;
+    };
+};
+
 export interface DashboardStats {
     totalUsers: number;
     totalBookings: number;
@@ -81,11 +128,5 @@ export interface DashboardStats {
         guestCount: number;
         status: string;
     }>;
-    recentOrders: Array<{
-        id: string;
-        dateTime: string;
-        totalPrice: number;
-        itemCount: number;
-        status: string;
-    }>;
+    recentOrders: Order[];
 }

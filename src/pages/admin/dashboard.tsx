@@ -18,9 +18,10 @@ import AdminLayout from "@/components/layout/admin/AdminLayout";
 import StatCard from "@/components/card/admin/StatCard";
 import ChartCard from "@/components/card/admin/ChartCard";
 import RecentBooking from "@/components/card/admin/RecentBooking";
-import RecentOrder from "@/components/card/admin/RecentOrder";
 import { useAuth } from "@/hooks/useAuth";
 import { useGetDashboardStats } from "@/hooks/useGetDashboardStats";
+import RecentOrder from "@/components/card/admin/RecentOrder";
+import { calculateOrderTotal } from "@/utils";
 
 const AdminDashboardPage: NextPage = () => {
     const { isAuthenticated } = useAuth(
@@ -210,27 +211,29 @@ const AdminDashboardPage: NextPage = () => {
                                     dashboardStats.recentOrders.map((order) => (
                                         <RecentOrder
                                             key={order.id}
-                                            orderNumber={order.id
-                                                .substring(0, 8)
-                                                .toUpperCase()}
+                                            name={order.booking.user.name}
                                             date={format(
-                                                new Date(order.dateTime),
+                                                new Date(
+                                                    order.booking.dateTime
+                                                ),
                                                 "dd MMM yyyy",
                                                 {
                                                     locale: localeId,
                                                 }
                                             )}
                                             time={format(
-                                                new Date(order.dateTime),
+                                                new Date(
+                                                    order.booking.dateTime
+                                                ),
                                                 "HH:mm",
                                                 {
                                                     locale: localeId,
                                                 }
                                             )}
-                                            items={order.itemCount}
-                                            total={`Rp ${order.totalPrice.toLocaleString(
-                                                "id-ID"
-                                            )}`}
+                                            items={order.items.length}
+                                            total={calculateOrderTotal(
+                                                order.items
+                                            )}
                                             status={order.status}
                                         />
                                     ))

@@ -91,7 +91,6 @@ model Order {
   bookingId  String
   booking    Booking     @relation(fields: [bookingId], references: [id])
   items      OrderItem[]
-  totalPrice Float
   status     OrderStatus @default(PENDING)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -103,16 +102,15 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id])
   menuId    String
   menu      Menu     @relation(fields: [menuId], references: [id])
-  quantity  Int
-  price     Float
+  quantity  Int      @default(1)
+  notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 enum OrderStatus {
   PENDING
-  PROCESSING
-  SERVED
-  PAID
+  PREPARING
+  COMPLETED
   CANCELLED
 }

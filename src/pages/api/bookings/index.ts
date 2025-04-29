@@ -53,7 +53,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
                     table: true,
                 },
                 orderBy: {
-                    dateTime: "asc",
+                    createdAt: "desc",
                 },
             });
 

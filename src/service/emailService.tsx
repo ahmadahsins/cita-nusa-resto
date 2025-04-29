@@ -13,15 +13,6 @@ export async function sendBookingConfirmationEmail({
 }: SendBookingConfirmationParams) {
     const { user, table } = booking;
 
-    // // Log untuk debugging
-    // console.log("Sending email with booking data:", {
-    //     id: booking.id,
-    //     customerName: user.name,
-    //     customerEmail: user.email,
-    //     dateTime: booking.dateTime,
-    //     tableNumber: table.tableNumber,
-    // });
-
     try {
         // Validasi environment variables
         if (!process.env.RESEND_API_KEY) {

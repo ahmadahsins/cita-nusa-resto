@@ -18,6 +18,7 @@ import {
     Search,
     UserCheck,
     X,
+    CalendarClock,
 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { toast } from "react-hot-toast";
@@ -43,9 +44,6 @@ const AdminBookingsPage: NextPage = () => {
     );
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [isLoadingConfirm, setIsLoadingConfirm] = useState(false);
-    const [isLoadingFinish, setIsLoadingFinish] = useState(false);
-    const [isLoadingCancel, setIsLoadingCancel] = useState(false);
 
     const itemsPerPage = 10;
 
@@ -105,14 +103,8 @@ const AdminBookingsPage: NextPage = () => {
             );
             refetch();
         },
-        onError: (error) => {
-            console.error("Error updating booking status:", error);
+        onError: () => {
             toast.error("Gagal mengubah status reservasi");
-        },
-        onSettled: () => {
-            if (isLoadingConfirm) setIsLoadingConfirm(false);
-            else if (isLoadingFinish) setIsLoadingFinish(false);
-            else if (isLoadingCancel) setIsLoadingCancel(false);
         },
     });
 
@@ -268,6 +260,9 @@ const AdminBookingsPage: NextPage = () => {
                             <thead>
                                 <tr className="bg-amber-50">
                                     <th className="py-3 px-4 text-left text-xs font-medium text-amber-800 uppercase tracking-wider border-b">
+                                        ID Reservasi
+                                    </th>
+                                    <th className="py-3 px-4 text-left text-xs font-medium text-amber-800 uppercase tracking-wider border-b">
                                         Pelanggan
                                     </th>
                                     <th className="py-3 px-4 text-left text-xs font-medium text-amber-800 uppercase tracking-wider border-b">
@@ -293,6 +288,16 @@ const AdminBookingsPage: NextPage = () => {
                                         key={booking.id}
                                         className="hover:bg-gray-50"
                                     >
+                                        <td className="py-4 px-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <CalendarClock className="h-4 w-4 text-amber-600 mr-2" />
+                                                <span className="font-medium text-amber-900">
+                                                    {booking.id
+                                                        .substring(0, 8)
+                                                        .toUpperCase()}
+                                                </span>
+                                            </div>
+                                        </td>
                                         <td className="py-4 px-4 whitespace-nowrap">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-gray-900">
@@ -371,19 +376,11 @@ const AdminBookingsPage: NextPage = () => {
                                                             booking.id,
                                                             "CONFIRMED"
                                                         );
-                                                        setIsLoadingConfirm(
-                                                            true
-                                                        );
                                                     }}
                                                     disabled={isPending}
-                                                    className="inline-flex items-center px-2.5 py-1.5 bg-green-50 text-green-800 rounded hover:bg-green-100"
+                                                    className={`inline-flex items-center px-2.5 py-1.5 bg-green-50 text-green-800 rounded hover:bg-green-100 ${isPending ? "cursor-not-allowed  bg-green-50/50" : ""}`}
                                                 >
-                                                    {isPending &&
-                                                    isLoadingConfirm ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <Check className="h-4 w-4 mr-1" />
-                                                    )}
+                                                    <Check className="h-4 w-4 mr-1" />
                                                     Konfirmasi
                                                 </button>
                                             )}
@@ -395,19 +392,11 @@ const AdminBookingsPage: NextPage = () => {
                                                             booking.id,
                                                             "COMPLETED"
                                                         );
-                                                        setIsLoadingFinish(
-                                                            true
-                                                        );
                                                     }}
                                                     disabled={isPending}
-                                                    className="inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-800 rounded hover:bg-blue-100"
+                                                    className={`inline-flex items-center px-2.5 py-1.5 bg-blue-50 text-blue-800 rounded hover:bg-blue-100 ${isPending ? "cursor-not-allowed  bg-blue-50/50" : ""}`}
                                                 >
-                                                    {isPending &&
-                                                    isLoadingFinish ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <UserCheck className="h-4 w-4 mr-1" />
-                                                    )}
+                                                    <UserCheck className="h-4 w-4 mr-1" />
                                                     Selesai
                                                 </button>
                                             )}
@@ -421,19 +410,11 @@ const AdminBookingsPage: NextPage = () => {
                                                             booking.id,
                                                             "CANCELLED"
                                                         );
-                                                        setIsLoadingCancel(
-                                                            true
-                                                        );
                                                     }}
                                                     disabled={isPending}
-                                                    className="inline-flex items-center px-2.5 py-1.5 bg-red-50 text-red-800 rounded hover:bg-red-100"
+                                                    className={`inline-flex items-center px-2.5 py-1.5 bg-red-50 text-red-800 rounded hover:bg-red-100 ${isPending ? "cursor-not-allowed  bg-red-50/50" : ""}`}
                                                 >
-                                                    {isPending &&
-                                                    isLoadingCancel ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                    ) : (
-                                                        <X className="h-4 w-4 mr-1" />
-                                                    )}
+                                                    <X className="h-4 w-4 mr-1" />
                                                     Batalkan
                                                 </button>
                                             )}
