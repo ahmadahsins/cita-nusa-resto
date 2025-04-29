@@ -3,6 +3,12 @@ import { AuthenticatedRequest, withRole } from "../middleware/auth";
 import prisma from "@/lib/prisma";
 import { startOfDay, subDays, format } from "date-fns";
 
+// Definisi interface untuk hasil query
+interface DateCountResult {
+    date: Date;
+    count: bigint;
+}
+
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
         return res.status(405).json({ message: "Method Not Allowed" });
@@ -51,7 +57,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
             return format(date, "yyyy-MM-dd");
         });
 
-        const bookingsCount = await prisma.$queryRaw`
+        const bookingsCount = await prisma.$queryRaw<DateCountResult[]>`
       SELECT 
         DATE("createdAt") as date, 
         COUNT(*) as count
@@ -68,7 +74,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Mengisi hari tanpa reservasi dengan nilai 0
         const bookingsPerDay = last7Days.map((date) => {
             const found = bookingsCount.find(
-                (b: any) => format(new Date(b.date), "yyyy-MM-dd") === date
+                (b: DateCountResult) =>
+                    format(new Date(b.date), "yyyy-MM-dd") === date
             );
             return {
                 date,
@@ -77,7 +84,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         });
 
         // Data untuk chart pesanan per hari (7 hari terakhir)
-        const ordersCount = await prisma.$queryRaw`
+        const ordersCount = await prisma.$queryRaw<DateCountResult[]>`
       SELECT 
         DATE("createdAt") as date, 
         COUNT(*) as count
@@ -94,7 +101,8 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         // Mengisi hari tanpa pesanan dengan nilai 0
         const ordersPerDay = last7Days.map((date) => {
             const found = ordersCount.find(
-                (o: any) => format(new Date(o.date), "yyyy-MM-dd") === date
+                (o: DateCountResult) =>
+                    format(new Date(o.date), "yyyy-MM-dd") === date
             );
             return {
                 date,
