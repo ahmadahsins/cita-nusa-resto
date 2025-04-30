@@ -43,7 +43,7 @@ const dashboardNavItems = [
     },
     {
         title: "Menu",
-        href: "/admin/menu",
+        href: "/admin/menus",
         icon: <BookOpen className="h-5 w-5" />,
     },
     {
