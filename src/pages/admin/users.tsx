@@ -13,6 +13,7 @@ import {
     UserCog,
     Shield,
     UserCheck,
+    LucideIcon,
 } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,24 +27,26 @@ type User = {
     createdAt: string;
 };
 
-const roleLabels: Record<string, { label: string; color: string; icon: any }> =
-    {
-        ADMIN: {
-            label: "Admin",
-            color: "bg-purple-100 text-purple-800",
-            icon: Shield,
-        },
-        STAFF: {
-            label: "Staff",
-            color: "bg-blue-100 text-blue-800",
-            icon: UserCog,
-        },
-        CUSTOMER: {
-            label: "Pelanggan",
-            color: "bg-green-100 text-green-800",
-            icon: User,
-        },
-    };
+const roleLabels: Record<
+    string,
+    { label: string; color: string; icon: LucideIcon }
+> = {
+    ADMIN: {
+        label: "Admin",
+        color: "bg-purple-100 text-purple-800",
+        icon: Shield,
+    },
+    STAFF: {
+        label: "Staff",
+        color: "bg-blue-100 text-blue-800",
+        icon: UserCog,
+    },
+    CUSTOMER: {
+        label: "Pelanggan",
+        color: "bg-green-100 text-green-800",
+        icon: User,
+    },
+};
 
 const UserManagementPage: NextPage = () => {
     const { isAuthenticated, isHydrated } = useAuth(
