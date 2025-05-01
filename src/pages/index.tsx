@@ -266,19 +266,25 @@ const Home: NextPage = () => {
                         >
                             Lokasi Kami
                         </h3>
+
+                        {/* Embed Google Maps */}
                         <div className="relative h-64 rounded-lg overflow-hidden mb-4">
-                            <Image
-                                src="/api/placeholder/800/400"
-                                alt="Peta Lokasi"
-                                layout="fill"
-                                objectFit="cover"
-                            />
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126223.49937453566!2d115.20055934863283!3d-8.672764672026936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd241e5c2a234ed%3A0x79baf75de8e6c873!2sSanur%2C%20Denpasar%2C%20Bali!5e0!3m2!1sid!2sid!4v1714556729050!5m2!1sid!2sid"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
                         </div>
+
                         <p className="text-gray-600 mb-2">
-                            Jl. Raya Cita Nusa No. 123 Denpasar, Bali
+                            Jl. Raya Cita Nusa No. 123, Denpasar, Bali
                         </p>
                         <Link
-                            href="https://maps.google.com"
+                            href="https://www.google.com/maps?q=Jl.+Raya+Cita+Nusa+No.+123,+Denpasar,+Bali"
                             target="_blank"
                             className="text-amber-600 hover:text-amber-800 font-medium inline-flex items-center"
                         >
