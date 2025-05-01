@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextApiResponse } from "next";
-import { AuthenticatedRequest, withRole } from "../middleware/auth";
+import { AuthenticatedRequest } from "../middleware/auth";
 
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     if (req.method === "GET") {
@@ -78,4 +78,4 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     }
 }
 
-export default withRole(["ADMIN", "STAFF", "CUSTOMER"])(handler);
+export default handler;

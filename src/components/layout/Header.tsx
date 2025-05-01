@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { User, LogOut, Menu, X } from "lucide-react";
 import { playfair } from "@/pages/_app";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 
 const Header: React.FC = () => {
     const { isAuthenticated, user, logout } = useAuthStore();
