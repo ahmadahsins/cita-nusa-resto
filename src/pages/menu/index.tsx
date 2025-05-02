@@ -379,7 +379,7 @@ const MenuPage: NextPage = () => {
                                 >
                                     Sebelumnya
                                 </motion.button>
-                                <div className="flex items-center space-x-1">
+                                <div className="flex items-center space-x-1 overflow-x-auto flex-nowrap scrollbar-hide">
                                     {Array.from({ length: totalPages }).map(
                                         (_, idx) => (
                                             <motion.button

@@ -5,78 +5,111 @@ import Link from "next/link";
 import Layout from "@/components/layout/Layout";
 import { Award, Users, Calendar, Utensils } from "lucide-react";
 import { playfair } from "../_app";
+import { milestones, teamMembers } from "@/constants";
+import { motion } from "framer-motion";
+import { useRef } from "react";
+import { useInView } from "framer-motion";
+import TeamMemberCard from "@/components/card/about/TeamMemberCard ";
 
 const AboutPage: NextPage = () => {
-    // Data dummy untuk halaman about
-    const teamMembers = [
-        {
-            id: 1,
-            name: "Budi Santoso",
-            position: "Head Chef",
-            image: "chef-1.jpg",
-            bio: "Chef Budi memiliki pengalaman lebih dari 15 tahun dalam dunia kuliner Indonesia. Dia telah memasak untuk berbagai acara penting dan memenangkan beberapa penghargaan kuliner nasional.",
-        },
-        {
-            id: 2,
-            name: "Siti Rahayu",
-            position: "Restaurant Manager",
-            image: "manager-1.jpg",
-            bio: "Siti telah mengelola beberapa restoran terkemuka di Indonesia selama 10 tahun terakhir. Dengan latar belakang hospitality management, dia memastikan pengalaman tamu yang sempurna.",
-        },
-        {
-            id: 3,
-            name: "Agus Wijaya",
-            position: "Sous Chef",
-            image: "chef-2.jpg",
-            bio: "Chef Agus adalah spesialis dalam hidangan seafood dan bumbu rempah Nusantara. Perjalanan kulinernya dimulai dari dapur keluarga di Sulawesi Selatan.",
-        },
-        {
-            id: 4,
-            name: "Dewi Anggraini",
-            position: "Pastry Chef",
-            image: "chef-3.jpg",
-            bio: "Chef Dewi adalah ahli dalam menggabungkan teknik pastry modern dengan cita rasa tradisional Indonesia, menciptakan dessert yang unik dan memorable.",
-        },
-    ];
+    // Refs for each section
+    const storyRef = useRef(null);
+    const valuesRef = useRef(null);
+    const milestonesRef = useRef(null);
+    const teamRef = useRef(null);
+    const ctaRef = useRef(null);
 
-    const milestones = [
-        {
-            year: 2018,
-            title: "Awal Perjalanan",
-            description:
-                "Cita Nusa Resto didirikan oleh keluarga Santoso dengan visi melestarikan kekayaan kuliner Indonesia.",
+    // Check if sections are in view
+    const storyInView = useInView(storyRef, { once: true, amount: 0.3 });
+    const valuesInView = useInView(valuesRef, { once: true, amount: 0.3 });
+    const milestonesInView = useInView(milestonesRef, {
+        once: true,
+        amount: 0.3,
+    });
+    const teamInView = useInView(teamRef, { once: true, amount: 0.3 });
+    const ctaInView = useInView(ctaRef, { once: true, amount: 0.5 });
+
+    // Animation variants
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { duration: 0.8, ease: "easeOut" },
         },
-        {
-            year: 2019,
-            title: "Ekspansi Menu",
-            description:
-                "Penambahan menu dari berbagai daerah di Indonesia untuk memperkaya pengalaman kuliner para tamu.",
+    };
+
+    const fadeInUp = {
+        hidden: { opacity: 0, y: 60 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.8, ease: "easeOut" },
         },
-        {
-            year: 2020,
-            title: "Adaptasi di Masa Pandemi",
-            description:
-                "Mengembangkan layanan pesan antar dan take away untuk tetap melayani pelanggan setia.",
+    };
+
+    const staggerContainer = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+                delayChildren: 0.3,
+            },
         },
-        {
-            year: 2021,
-            title: "Renovasi & Inovasi",
-            description:
-                "Renovasi total interior restoran dan inovasi menu dengan menambahkan sentuhan modern.",
+    };
+
+    const staggerContainerTeam = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+            },
         },
-        {
-            year: 2022,
-            title: "Penghargaan Kuliner",
-            description:
-                "Menerima penghargaan 'Restoran Autentik Terbaik' dari Asosiasi Kuliner Indonesia.",
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeOut" },
         },
-        {
-            year: 2023,
-            title: "Keberlanjutan",
-            description:
-                "Berkomitmen menggunakan bahan lokal dan praktik ramah lingkungan dalam operasional restoran.",
+    };
+
+    const heroTextVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                ease: "easeOut",
+                delay: 0.3,
+            },
         },
-    ];
+    };
+
+    const imgScale = {
+        hidden: { opacity: 0, scale: 0.8 },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+                duration: 0.8,
+                ease: "easeOut",
+            },
+        },
+    };
+
+    const buttonHover = {
+        rest: { scale: 1 },
+        hover: {
+            scale: 1.05,
+            transition: { duration: 0.2 },
+        },
+        tap: { scale: 0.95 },
+    };
 
     return (
         <Layout>
@@ -89,7 +122,12 @@ const AboutPage: NextPage = () => {
             </Head>
 
             {/* Hero Section */}
-            <section className="relative h-[40vh]">
+            <motion.section
+                className="relative h-[40vh]"
+                initial="hidden"
+                animate="visible"
+                variants={fadeIn}
+            >
                 <div className="absolute inset-0 bg-black/60 z-10" />
                 <div className="relative h-full">
                     <Image
@@ -100,26 +138,43 @@ const AboutPage: NextPage = () => {
                         priority
                     />
                 </div>
-                <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4">
+                <motion.div
+                    className="absolute inset-0 z-20 flex items-center justify-center text-center px-4"
+                    variants={heroTextVariants}
+                >
                     <div className="max-w-3xl">
-                        <h1
+                        <motion.h1
                             className={`text-4xl md:text-5xl font-extrabold text-white mb-4 ${playfair.className}`}
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
                         >
                             Tentang Kami
-                        </h1>
-                        <p className="text-lg md:text-xl text-white">
+                        </motion.h1>
+                        <motion.p
+                            className="text-lg md:text-xl text-white"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.8, duration: 0.8 }}
+                        >
                             Perjalanan kami dalam menghadirkan cita rasa
                             nusantara yang autentik
-                        </p>
+                        </motion.p>
                     </div>
-                </div>
-            </section>
+                </motion.div>
+            </motion.section>
 
             {/* Our Story Section */}
-            <section className="py-16 px-4 bg-white">
+            <motion.section
+                className="py-16 px-4 bg-white"
+                ref={storyRef}
+                initial="hidden"
+                animate={storyInView ? "visible" : "hidden"}
+                variants={fadeInUp}
+            >
                 <div className="container mx-auto max-w-6xl">
                     <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="lg:w-1/2">
+                        <motion.div className="lg:w-1/2" variants={imgScale}>
                             <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
                                 <Image
                                     src="/images/about-story.jpg"
@@ -128,66 +183,144 @@ const AboutPage: NextPage = () => {
                                     objectFit="cover"
                                 />
                             </div>
-                        </div>
-                        <div className="lg:w-1/2">
-                            <h2
+                        </motion.div>
+                        <motion.div className="lg:w-1/2" variants={fadeInUp}>
+                            <motion.h2
                                 className={`text-3xl font-bold text-amber-900 mb-6 ${playfair.className}`}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={
+                                    storyInView
+                                        ? { opacity: 1, x: 0 }
+                                        : { opacity: 0, x: -20 }
+                                }
+                                transition={{ delay: 0.2, duration: 0.6 }}
                             >
                                 Kisah Kami
-                            </h2>
-                            <p className="text-gray-700 mb-4">
+                            </motion.h2>
+                            <motion.p
+                                className="text-gray-700 mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={
+                                    storyInView
+                                        ? { opacity: 1 }
+                                        : { opacity: 0 }
+                                }
+                                transition={{ delay: 0.3, duration: 0.6 }}
+                            >
                                 Cita Nusa Resto didirikan pada tahun 2018 dengan
                                 sebuah misi sederhana namun mendalam:
                                 melestarikan dan memperkenalkan kekayaan kuliner
                                 Indonesia kepada masyarakat luas.
-                            </p>
-                            <p className="text-gray-700 mb-4">
+                            </motion.p>
+                            <motion.p
+                                className="text-gray-700 mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={
+                                    storyInView
+                                        ? { opacity: 1 }
+                                        : { opacity: 0 }
+                                }
+                                transition={{ delay: 0.4, duration: 0.6 }}
+                            >
                                 Berawal dari kecintaan keluarga Santoso terhadap
                                 masakan nusantara, Cita Nusa hadir sebagai wadah
                                 untuk berbagi cita rasa autentik Indonesia yang
                                 kaya akan rempah dan kenangan. Kami percaya
                                 bahwa setiap hidangan memiliki cerita dan
                                 warisan budaya yang patut dilestarikan.
-                            </p>
-                            <p className="text-gray-700 mb-4">
+                            </motion.p>
+                            <motion.p
+                                className="text-gray-700 mb-4"
+                                initial={{ opacity: 0 }}
+                                animate={
+                                    storyInView
+                                        ? { opacity: 1 }
+                                        : { opacity: 0 }
+                                }
+                                transition={{ delay: 0.5, duration: 0.6 }}
+                            >
                                 Nama {"Cita Nusa"} sendiri merupakan perwujudan
                                 dari cita-cita kami untuk mengangkat cita rasa
                                 kuliner nusantara ke panggung yang lebih luas,
                                 tetap mempertahankan keasliannya namun disajikan
                                 dengan sentuhan modern.
-                            </p>
-                            <p className="text-gray-700">
+                            </motion.p>
+                            <motion.p
+                                className="text-gray-700"
+                                initial={{ opacity: 0 }}
+                                animate={
+                                    storyInView
+                                        ? { opacity: 1 }
+                                        : { opacity: 0 }
+                                }
+                                transition={{ delay: 0.6, duration: 0.6 }}
+                            >
                                 Setiap hidangan yang kami sajikan merupakan
                                 hasil dari riset mendalam, pemilihan bahan
                                 berkualitas, dan dedikasi untuk mempersembahkan
                                 yang terbaik bagi para tamu. Inilah yang menjadi
                                 fondasi Cita Nusa Resto hingga saat ini.
-                            </p>
-                        </div>
+                            </motion.p>
+                        </motion.div>
                     </div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Values Section */}
-            <section className="py-16 px-4 bg-amber-50">
+            <motion.section
+                className="py-16 px-4 bg-amber-50"
+                ref={valuesRef}
+                initial="hidden"
+                animate={valuesInView ? "visible" : "hidden"}
+                variants={fadeInUp}
+            >
                 <div className="container mx-auto max-w-6xl">
-                    <div className="text-center mb-12">
-                        <h2
+                    <motion.div
+                        className="text-center mb-12"
+                        variants={fadeInUp}
+                    >
+                        <motion.h2
                             className={`text-3xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                            initial={{ opacity: 0 }}
+                            animate={
+                                valuesInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ duration: 0.6 }}
                         >
                             Nilai-Nilai Kami
-                        </h2>
-                        <p className="text-gray-700 max-w-2xl mx-auto">
+                        </motion.h2>
+                        <motion.p
+                            className="text-gray-700 max-w-2xl mx-auto"
+                            initial={{ opacity: 0 }}
+                            animate={
+                                valuesInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                        >
                             Prinsip yang memandu kami dalam menyajikan
                             pengalaman kuliner terbaik
-                        </p>
-                    </div>
+                        </motion.p>
+                    </motion.div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <div className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+                        variants={staggerContainer}
+                    >
+                        <motion.div
+                            className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                            variants={cardVariants}
+                            whileHover={{
+                                y: -10,
+                                transition: { duration: 0.3 },
+                            }}
+                        >
+                            <motion.div
+                                className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4"
+                                whileHover={{ rotate: 5, scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                            >
                                 <Award className="h-8 w-8 text-amber-700" />
-                            </div>
+                            </motion.div>
                             <h3 className="text-xl font-semibold text-amber-900 mb-2 text-center">
                                 Keaslian
                             </h3>
@@ -196,12 +329,23 @@ const AboutPage: NextPage = () => {
                                 dengan resep autentik dan teknik tradisional
                                 Indonesia.
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <div className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                        <motion.div
+                            className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                            variants={cardVariants}
+                            whileHover={{
+                                y: -10,
+                                transition: { duration: 0.3 },
+                            }}
+                        >
+                            <motion.div
+                                className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4"
+                                whileHover={{ rotate: 5, scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                            >
                                 <Utensils className="h-8 w-8 text-amber-700" />
-                            </div>
+                            </motion.div>
                             <h3 className="text-xl font-semibold text-amber-900 mb-2 text-center">
                                 Kualitas
                             </h3>
@@ -210,12 +354,23 @@ const AboutPage: NextPage = () => {
                                 gunakan untuk menciptakan hidangan berkualitas
                                 tinggi.
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <div className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                        <motion.div
+                            className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                            variants={cardVariants}
+                            whileHover={{
+                                y: -10,
+                                transition: { duration: 0.3 },
+                            }}
+                        >
+                            <motion.div
+                                className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4"
+                                whileHover={{ rotate: 5, scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                            >
                                 <Users className="h-8 w-8 text-amber-700" />
-                            </div>
+                            </motion.div>
                             <h3 className="text-xl font-semibold text-amber-900 mb-2 text-center">
                                 Keramahan
                             </h3>
@@ -224,12 +379,23 @@ const AboutPage: NextPage = () => {
                                 tulus adalah bagian penting dari pengalaman
                                 bersantap.
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <div className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                        <motion.div
+                            className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                            variants={cardVariants}
+                            whileHover={{
+                                y: -10,
+                                transition: { duration: 0.3 },
+                            }}
+                        >
+                            <motion.div
+                                className="w-16 h-16 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-4"
+                                whileHover={{ rotate: 5, scale: 1.1 }}
+                                transition={{ duration: 0.2 }}
+                            >
                                 <Calendar className="h-8 w-8 text-amber-700" />
-                            </div>
+                            </motion.div>
                             <h3 className="text-xl font-semibold text-amber-900 mb-2 text-center">
                                 Inovasi
                             </h3>
@@ -238,35 +404,87 @@ const AboutPage: NextPage = () => {
                                 tetap menghormati akar dan tradisi kuliner
                                 Indonesia.
                             </p>
-                        </div>
-                    </div>
+                        </motion.div>
+                    </motion.div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Milestones Section */}
-            <section className="py-16 px-4 bg-white">
+            <motion.section
+                className="py-16 px-4 bg-white"
+                ref={milestonesRef}
+                initial="hidden"
+                animate={milestonesInView ? "visible" : "hidden"}
+                variants={fadeInUp}
+            >
                 <div className="container mx-auto max-w-4xl">
-                    <div className="text-center mb-12">
-                        <h2
+                    <motion.div
+                        className="text-center mb-12"
+                        variants={fadeInUp}
+                    >
+                        <motion.h2
                             className={`text-3xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                            initial={{ opacity: 0 }}
+                            animate={
+                                milestonesInView
+                                    ? { opacity: 1 }
+                                    : { opacity: 0 }
+                            }
+                            transition={{ duration: 0.6 }}
                         >
                             Perjalanan Kami
-                        </h2>
-                        <p className="text-gray-700 max-w-2xl mx-auto">
+                        </motion.h2>
+                        <motion.p
+                            className="text-gray-700 max-w-2xl mx-auto"
+                            initial={{ opacity: 0 }}
+                            animate={
+                                milestonesInView
+                                    ? { opacity: 1 }
+                                    : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                        >
                             Tonggak penting dalam perjalanan Cita Nusa Resto
                             hingga saat ini
-                        </p>
-                    </div>
+                        </motion.p>
+                    </motion.div>
 
-                    <div className="space-y-8">
+                    <motion.div
+                        className="space-y-8"
+                        variants={staggerContainer}
+                    >
                         {milestones.map((milestone, index) => (
-                            <div
+                            <motion.div
                                 key={index}
                                 className="flex flex-col md:flex-row items-start md:items-center gap-4"
+                                variants={cardVariants}
+                                initial={{
+                                    opacity: 0,
+                                    x: index % 2 === 0 ? -50 : 50,
+                                }}
+                                animate={
+                                    milestonesInView
+                                        ? { opacity: 1, x: 0 }
+                                        : {
+                                              opacity: 0,
+                                              x: index % 2 === 0 ? -50 : 50,
+                                          }
+                                }
+                                transition={{
+                                    delay: 0.2 + index * 0.1,
+                                    duration: 0.6,
+                                }}
+                                whileHover={{
+                                    scale: 1.02,
+                                    transition: { duration: 0.2 },
+                                }}
                             >
-                                <div className="bg-amber-100 text-amber-900 px-4 py-2 rounded-lg font-bold text-xl min-w-[100px] text-center">
+                                <motion.div
+                                    className="bg-amber-100 text-amber-900 px-4 py-2 rounded-lg font-bold text-xl min-w-[100px] text-center"
+                                    whileHover={{ scale: 1.05 }}
+                                >
                                     {milestone.year}
-                                </div>
+                                </motion.div>
                                 <div className="bg-amber-50 rounded-lg p-6 shadow-sm flex-1">
                                     <h3 className="text-xl font-semibold text-amber-900 mb-2">
                                         {milestone.title}
@@ -275,90 +493,159 @@ const AboutPage: NextPage = () => {
                                         {milestone.description}
                                     </p>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Our Team Section */}
-            <section className="py-16 px-4 bg-amber-50">
+            <motion.section
+                className="py-16 px-4 bg-amber-50"
+                ref={teamRef}
+                initial="hidden"
+                animate={teamInView ? "visible" : "hidden"}
+                variants={fadeInUp}
+            >
                 <div className="container mx-auto max-w-6xl">
-                    <div className="text-center mb-12">
-                        <h2
+                    <motion.div
+                        className="text-center mb-12"
+                        variants={fadeInUp}
+                    >
+                        <motion.h2
                             className={`text-3xl font-bold text-amber-900 mb-4 ${playfair.className}`}
+                            initial={{ opacity: 0 }}
+                            animate={
+                                teamInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ duration: 0.6 }}
                         >
                             Tim Kami
-                        </h2>
-                        <p className="text-gray-700 max-w-2xl mx-auto">
+                        </motion.h2>
+                        <motion.p
+                            className="text-gray-700 max-w-2xl mx-auto"
+                            initial={{ opacity: 0 }}
+                            animate={
+                                teamInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                        >
                             Inilah orang-orang berbakat di balik hidangan lezat
                             Cita Nusa Resto
-                        </p>
-                    </div>
+                        </motion.p>
+                    </motion.div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+                        variants={staggerContainerTeam}
+                        initial="hidden"
+                        animate="show"
+                    >
                         {teamMembers.map((member) => (
-                            <div
+                            <TeamMemberCard
                                 key={member.id}
-                                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-                            >
-                                <div className="relative h-64">
-                                    <Image
-                                        src={`/images/team/${member.image}`}
-                                        alt={member.name}
-                                        layout="fill"
-                                        objectFit="cover"
-                                    />
-                                </div>
-                                <div className="p-5">
-                                    <h3 className="text-xl font-semibold text-amber-900 mb-1">
-                                        {member.name}
-                                    </h3>
-                                    <p className="text-amber-600 font-medium text-sm mb-3">
-                                        {member.position}
-                                    </p>
-                                    <p className="text-gray-600 text-sm">
-                                        {member.bio}
-                                    </p>
-                                </div>
-                            </div>
+                                member={
+                                    member as unknown as Record<string, string>
+                                }
+                            />
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Reservation CTA */}
-            <section className="py-12 bg-amber-900 text-white">
+            <motion.section
+                className="py-12 bg-amber-900 text-white"
+                ref={ctaRef}
+                initial={{ opacity: 0, y: 50 }}
+                animate={
+                    ctaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }
+                }
+                transition={{ duration: 0.8 }}
+            >
                 <div className="container mx-auto px-4">
                     <div className="max-w-3xl mx-auto text-center">
-                        <h2
+                        <motion.h2
                             className={`text-3xl font-bold mb-6 ${playfair.className}`}
+                            initial={{ opacity: 0 }}
+                            animate={
+                                ctaInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.2, duration: 0.6 }}
                         >
                             Rasakan Pengalaman Bersantap Bersama Kami
-                        </h2>
-                        <p className="text-amber-100 mb-8 text-lg">
+                        </motion.h2>
+                        <motion.p
+                            className="text-amber-100 mb-8 text-lg"
+                            initial={{ opacity: 0 }}
+                            animate={
+                                ctaInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.4, duration: 0.6 }}
+                        >
                             Kami menantikan kehadiran Anda untuk menikmati
                             beragam cita rasa nusantara di Cita Nusa Resto.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link
-                                href="/booking/new"
-                                className="bg-white hover:bg-gray-100 text-amber-900 px-6 py-3 rounded-md text-lg font-medium transition-colors duration-200 inline-flex items-center justify-center"
+                        </motion.p>
+                        <motion.div
+                            className="flex flex-col sm:flex-row gap-4 justify-center"
+                            initial={{ opacity: 0 }}
+                            animate={
+                                ctaInView ? { opacity: 1 } : { opacity: 0 }
+                            }
+                            transition={{ delay: 0.6, duration: 0.6 }}
+                        >
+                            <motion.div
+                                variants={buttonHover}
+                                initial="rest"
+                                whileHover="hover"
+                                whileTap="tap"
                             >
-                                <Calendar className="mr-2 h-5 w-5" />
-                                Reservasi Sekarang
-                            </Link>
-                            <Link
-                                href="/menu"
-                                className="bg-transparent hover:bg-amber-800 text-white border border-white px-6 py-3 rounded-md text-lg font-medium transition-colors duration-200 inline-flex items-center justify-center"
+                                <Link
+                                    href="/booking/new"
+                                    className="bg-white hover:bg-gray-100 text-amber-900 px-6 py-3 rounded-md text-lg font-medium transition-colors duration-200 inline-flex items-center justify-center"
+                                >
+                                    <motion.span
+                                        className="flex items-center"
+                                        initial={{ x: -5 }}
+                                        animate={{ x: 0 }}
+                                        transition={{
+                                            delay: 0.8,
+                                            duration: 0.3,
+                                        }}
+                                    >
+                                        <Calendar className="mr-2 h-5 w-5" />
+                                        Reservasi Sekarang
+                                    </motion.span>
+                                </Link>
+                            </motion.div>
+                            <motion.div
+                                variants={buttonHover}
+                                initial="rest"
+                                whileHover="hover"
+                                whileTap="tap"
                             >
-                                <Utensils className="mr-2 h-5 w-5" />
-                                Lihat Menu Kami
-                            </Link>
-                        </div>
+                                <Link
+                                    href="/menu"
+                                    className="bg-transparent hover:bg-amber-800 text-white border border-white px-6 py-3 rounded-md text-lg font-medium transition-colors duration-200 inline-flex items-center justify-center"
+                                >
+                                    <motion.span
+                                        className="flex items-center"
+                                        initial={{ x: -5 }}
+                                        animate={{ x: 0 }}
+                                        transition={{
+                                            delay: 0.9,
+                                            duration: 0.3,
+                                        }}
+                                    >
+                                        <Utensils className="mr-2 h-5 w-5" />
+                                        Lihat Menu Kami
+                                    </motion.span>
+                                </Link>
+                            </motion.div>
+                        </motion.div>
                     </div>
                 </div>
-            </section>
+            </motion.section>
         </Layout>
     );
 };

@@ -119,10 +119,82 @@ const bestSellerMenu = [
     },
 ];
 
+const teamMembers = [
+    {
+        id: 1,
+        name: "Budi Santoso",
+        position: "Head Chef",
+        image: "chef-1.jpg",
+        bio: "Chef Budi memiliki pengalaman lebih dari 15 tahun dalam dunia kuliner Indonesia. Dia telah memasak untuk berbagai acara penting dan memenangkan beberapa penghargaan kuliner nasional.",
+    },
+    {
+        id: 2,
+        name: "Siti Rahayu",
+        position: "Restaurant Manager",
+        image: "manager-1.jpg",
+        bio: "Siti telah mengelola beberapa restoran terkemuka di Indonesia selama 10 tahun terakhir. Dengan latar belakang hospitality management, dia memastikan pengalaman tamu yang sempurna.",
+    },
+    {
+        id: 3,
+        name: "Agus Wijaya",
+        position: "Sous Chef",
+        image: "chef-2.jpg",
+        bio: "Chef Agus adalah spesialis dalam hidangan seafood dan bumbu rempah Nusantara. Perjalanan kulinernya dimulai dari dapur keluarga di Sulawesi Selatan.",
+    },
+    {
+        id: 4,
+        name: "Dewi Anggraini",
+        position: "Pastry Chef",
+        image: "chef-3.jpg",
+        bio: "Chef Dewi adalah ahli dalam menggabungkan teknik pastry modern dengan cita rasa tradisional Indonesia, menciptakan dessert yang unik dan memorable.",
+    },
+];
+
+const milestones = [
+    {
+        year: 2018,
+        title: "Awal Perjalanan",
+        description:
+            "Cita Nusa Resto didirikan oleh keluarga Santoso dengan visi melestarikan kekayaan kuliner Indonesia.",
+    },
+    {
+        year: 2019,
+        title: "Ekspansi Menu",
+        description:
+            "Penambahan menu dari berbagai daerah di Indonesia untuk memperkaya pengalaman kuliner para tamu.",
+    },
+    {
+        year: 2020,
+        title: "Adaptasi di Masa Pandemi",
+        description:
+            "Mengembangkan layanan pesan antar dan take away untuk tetap melayani pelanggan setia.",
+    },
+    {
+        year: 2021,
+        title: "Renovasi & Inovasi",
+        description:
+            "Renovasi total interior restoran dan inovasi menu dengan menambahkan sentuhan modern.",
+    },
+    {
+        year: 2022,
+        title: "Penghargaan Kuliner",
+        description:
+            "Menerima penghargaan 'Restoran Autentik Terbaik' dari Asosiasi Kuliner Indonesia.",
+    },
+    {
+        year: 2023,
+        title: "Keberlanjutan",
+        description:
+            "Berkomitmen menggunakan bahan lokal dan praktik ramah lingkungan dalam operasional restoran.",
+    },
+];
+
 export {
     statusColors,
     statusLabels,
     statusFilters,
     dashboardNavItems,
     bestSellerMenu,
+    teamMembers,
+    milestones,
 };

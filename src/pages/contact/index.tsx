@@ -9,6 +9,7 @@ import { playfair } from "../_app";
 import axiosInstance from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 const contactSchema = z.object({
     name: z.string().min(2, "Nama harus minimal 2 karakter"),
@@ -18,6 +19,50 @@ const contactSchema = z.object({
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
+
+// Animation variants
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: 0.6 }
+    }
+};
+
+const staggerChildren = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.2
+        }
+    }
+};
+
+const heroTextVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+        opacity: 1, 
+        y: 0,
+        transition: { 
+            duration: 0.8,
+            ease: "easeOut"
+        }
+    }
+};
+
+const pulseVariants = {
+    idle: { scale: 1 },
+    pulse: { 
+        scale: 1.05,
+        transition: {
+            duration: 0.3,
+            yoyo: Infinity,
+            ease: "easeInOut"
+        }
+    }
+};
 
 const ContactPage: NextPage = () => {
     const {
@@ -56,45 +101,86 @@ const ContactPage: NextPage = () => {
                 />
             </Head>
 
-            {/* Hero Section */}
+            {/* Hero Section with Animation */}
             <section className="relative h-[40vh]">
-                <div className="absolute inset-0 bg-black/50 z-10" />
+                <motion.div 
+                    className="absolute inset-0 bg-black/50 z-10"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                />
                 <div className="relative h-full">
                     <div className="bg-amber-900 h-full" />
                 </div>
                 <div className="absolute inset-0 z-20 flex items-center justify-center text-center px-4">
-                    <div className="max-w-3xl">
-                        <h1
+                    <motion.div 
+                        className="max-w-3xl"
+                        initial="hidden"
+                        animate="visible"
+                        variants={staggerChildren}
+                    >
+                        <motion.h1
                             className={`text-4xl md:text-5xl font-extrabold text-white mb-4 ${playfair.className}`}
+                            variants={heroTextVariants}
                         >
                             Hubungi Kami
-                        </h1>
-                        <p className="text-lg md:text-xl text-white">
+                        </motion.h1>
+                        <motion.p 
+                            className="text-lg md:text-xl text-white"
+                            variants={heroTextVariants}
+                        >
                             Kami siap mendengarkan pertanyaan, saran, dan
                             reservasi Anda
-                        </p>
-                    </div>
+                        </motion.p>
+                    </motion.div>
                 </div>
             </section>
 
-            {/* Contact Content */}
-            <section className="py-16 px-4 bg-amber-50">
+            {/* Contact Content with Animation */}
+            <motion.section 
+                className="py-16 px-4 bg-amber-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+            >
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid md:grid-cols-2 gap-10">
                         {/* Contact Info */}
-                        <div>
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.3 }}
+                            variants={fadeInUp}
+                        >
                             <div className="bg-white p-8 rounded-lg shadow-md">
-                                <h2
+                                <motion.h2
                                     className={`text-2xl font-bold text-amber-900 mb-6 ${playfair.className}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5 }}
                                 >
                                     Informasi Kontak
-                                </h2>
+                                </motion.h2>
 
-                                <div className="space-y-6">
-                                    <div className="flex items-start">
-                                        <div className="bg-amber-100 p-3 rounded-full mr-4">
+                                <motion.div 
+                                    className="space-y-6"
+                                    variants={staggerChildren}
+                                    initial="hidden"
+                                    whileInView="visible"
+                                    viewport={{ once: true }}
+                                >
+                                    <motion.div 
+                                        className="flex items-start"
+                                        variants={fadeInUp}
+                                    >
+                                        <motion.div 
+                                            className="bg-amber-100 p-3 rounded-full mr-4"
+                                            whileHover={{ scale: 1.1, backgroundColor: "#fef3c7" }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                        >
                                             <MapPin className="h-6 w-6 text-amber-700" />
-                                        </div>
+                                        </motion.div>
                                         <div>
                                             <h3 className="font-semibold text-amber-900 mb-1">
                                                 Alamat
@@ -105,12 +191,19 @@ const ContactPage: NextPage = () => {
                                                 Denpasar, Bali
                                             </p>
                                         </div>
-                                    </div>
+                                    </motion.div>
 
-                                    <div className="flex items-start">
-                                        <div className="bg-amber-100 p-3 rounded-full mr-4">
+                                    <motion.div 
+                                        className="flex items-start"
+                                        variants={fadeInUp}
+                                    >
+                                        <motion.div 
+                                            className="bg-amber-100 p-3 rounded-full mr-4"
+                                            whileHover={{ scale: 1.1, backgroundColor: "#fef3c7" }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                        >
                                             <Phone className="h-6 w-6 text-amber-700" />
-                                        </div>
+                                        </motion.div>
                                         <div>
                                             <h3 className="font-semibold text-amber-900 mb-1">
                                                 Telepon
@@ -119,12 +212,19 @@ const ContactPage: NextPage = () => {
                                                 (021) 123-4567
                                             </p>
                                         </div>
-                                    </div>
+                                    </motion.div>
 
-                                    <div className="flex items-start">
-                                        <div className="bg-amber-100 p-3 rounded-full mr-4">
+                                    <motion.div 
+                                        className="flex items-start"
+                                        variants={fadeInUp}
+                                    >
+                                        <motion.div 
+                                            className="bg-amber-100 p-3 rounded-full mr-4"
+                                            whileHover={{ scale: 1.1, backgroundColor: "#fef3c7" }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                        >
                                             <Mail className="h-6 w-6 text-amber-700" />
-                                        </div>
+                                        </motion.div>
                                         <div>
                                             <h3 className="font-semibold text-amber-900 mb-1">
                                                 Email
@@ -133,47 +233,74 @@ const ContactPage: NextPage = () => {
                                                 info@citanusaresto.com
                                             </p>
                                         </div>
-                                    </div>
-                                </div>
+                                    </motion.div>
+                                </motion.div>
 
-                                <div className="mt-8">
+                                <motion.div 
+                                    className="mt-8"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.6, duration: 0.5 }}
+                                >
                                     <h3 className="font-semibold text-amber-900 mb-3">
                                         Jam Operasional
                                     </h3>
                                     <ul className="text-gray-600 space-y-1">
-                                        <li className="flex justify-between">
+                                        <motion.li 
+                                            className="flex justify-between"
+                                            whileHover={{ x: 5, color: "#B45309" }}
+                                        >
                                             <span>Senin - Jumat:</span>
                                             <span>11.00 - 22.00</span>
-                                        </li>
-                                        <li className="flex justify-between">
+                                        </motion.li>
+                                        <motion.li 
+                                            className="flex justify-between"
+                                            whileHover={{ x: 5, color: "#B45309" }}
+                                        >
                                             <span>Sabtu - Minggu:</span>
                                             <span>10.00 - 23.00</span>
-                                        </li>
+                                        </motion.li>
                                     </ul>
-                                </div>
+                                </motion.div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Contact Form */}
-                        <div>
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.3 }}
+                            variants={fadeInUp}
+                            transition={{ delay: 0.3 }}
+                        >
                             <div className="bg-white p-8 rounded-lg shadow-md">
-                                <h2
+                                <motion.h2
                                     className={`text-2xl font-bold text-amber-900 mb-6 ${playfair.className}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5 }}
                                 >
                                     Kirim Pesan
-                                </h2>
+                                </motion.h2>
                                 <form
                                     onSubmit={handleSubmit(onSubmit)}
                                     className="space-y-4"
                                 >
-                                    <div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.2, duration: 0.4 }}
+                                    >
                                         <label
                                             htmlFor="name"
                                             className="block text-gray-700 mb-1"
                                         >
                                             Nama Lengkap
                                         </label>
-                                        <input
+                                        <motion.input
                                             id="name"
                                             type="text"
                                             className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 ${
@@ -183,22 +310,33 @@ const ContactPage: NextPage = () => {
                                             }`}
                                             placeholder="Masukkan nama lengkap"
                                             {...register("name")}
+                                            whileFocus={{ scale: 1.01, boxShadow: "0 0 0 2px rgba(217, 119, 6, 0.2)" }}
                                         />
                                         {errors.name && (
-                                            <p className="mt-1 text-red-500 text-sm">
+                                            <motion.p 
+                                                className="mt-1 text-red-500 text-sm"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
                                                 {errors.name.message}
-                                            </p>
+                                            </motion.p>
                                         )}
-                                    </div>
+                                    </motion.div>
 
-                                    <div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.3, duration: 0.4 }}
+                                    >
                                         <label
                                             htmlFor="email"
                                             className="block text-gray-700 mb-1"
                                         >
                                             Email
                                         </label>
-                                        <input
+                                        <motion.input
                                             id="email"
                                             type="email"
                                             className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 ${
@@ -208,22 +346,33 @@ const ContactPage: NextPage = () => {
                                             }`}
                                             placeholder="Masukkan alamat email"
                                             {...register("email")}
+                                            whileFocus={{ scale: 1.01, boxShadow: "0 0 0 2px rgba(217, 119, 6, 0.2)" }}
                                         />
                                         {errors.email && (
-                                            <p className="mt-1 text-red-500 text-sm">
+                                            <motion.p 
+                                                className="mt-1 text-red-500 text-sm"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
                                                 {errors.email.message}
-                                            </p>
+                                            </motion.p>
                                         )}
-                                    </div>
+                                    </motion.div>
 
-                                    <div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.4, duration: 0.4 }}
+                                    >
                                         <label
                                             htmlFor="subject"
                                             className="block text-gray-700 mb-1"
                                         >
                                             Subjek
                                         </label>
-                                        <input
+                                        <motion.input
                                             id="subject"
                                             type="text"
                                             className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 ${
@@ -233,22 +382,33 @@ const ContactPage: NextPage = () => {
                                             }`}
                                             placeholder="Masukkan subjek pesan"
                                             {...register("subject")}
+                                            whileFocus={{ scale: 1.01, boxShadow: "0 0 0 2px rgba(217, 119, 6, 0.2)" }}
                                         />
                                         {errors.subject && (
-                                            <p className="mt-1 text-red-500 text-sm">
+                                            <motion.p 
+                                                className="mt-1 text-red-500 text-sm"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
                                                 {errors.subject.message}
-                                            </p>
+                                            </motion.p>
                                         )}
-                                    </div>
+                                    </motion.div>
 
-                                    <div>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.5, duration: 0.4 }}
+                                    >
                                         <label
                                             htmlFor="message"
                                             className="block text-gray-700 mb-1"
                                         >
                                             Pesan
                                         </label>
-                                        <textarea
+                                        <motion.textarea
                                             id="message"
                                             rows={5}
                                             className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 ${
@@ -258,37 +418,62 @@ const ContactPage: NextPage = () => {
                                             }`}
                                             placeholder="Tulis pesan Anda"
                                             {...register("message")}
-                                        ></textarea>
+                                            whileFocus={{ scale: 1.01, boxShadow: "0 0 0 2px rgba(217, 119, 6, 0.2)" }}
+                                        ></motion.textarea>
                                         {errors.message && (
-                                            <p className="mt-1 text-red-500 text-sm">
+                                            <motion.p 
+                                                className="mt-1 text-red-500 text-sm"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
                                                 {errors.message.message}
-                                            </p>
+                                            </motion.p>
                                         )}
-                                    </div>
+                                    </motion.div>
 
-                                    <button
+                                    <motion.button
                                         type="submit"
                                         disabled={isPending}
                                         className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-md font-medium transition-colors duration-200 flex items-center justify-center"
+                                        whileHover={{ scale: 1.02, backgroundColor: "#B45309" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        initial="idle"
+                                        animate={isPending ? "pulse" : "idle"}
+                                        variants={pulseVariants}
                                     >
                                         {isPending ? (
                                             <span className="flex items-center">
-                                                <span className="animate-spin h-5 w-5 mr-2 border-2 border-white border-t-transparent rounded-full"></span>
+                                                <motion.span 
+                                                    className="h-5 w-5 mr-2 border-2 border-white border-t-transparent rounded-full"
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{ 
+                                                        repeat: Infinity, 
+                                                        duration: 1,
+                                                        ease: "linear"
+                                                    }}
+                                                ></motion.span>
                                                 Mengirim...
                                             </span>
                                         ) : (
                                             <span className="flex items-center">
-                                                <Send className="h-5 w-5 mr-2" />
+                                                <motion.div
+                                                    initial={{ x: -5, opacity: 0 }}
+                                                    animate={{ x: 0, opacity: 1 }}
+                                                    transition={{ delay: 0.1 }}
+                                                >
+                                                    <Send className="h-5 w-5 mr-2" />
+                                                </motion.div>
                                                 Kirim Pesan
                                             </span>
                                         )}
-                                    </button>
+                                    </motion.button>
                                 </form>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
-            </section>
+            </motion.section>
         </Layout>
     );
 };
