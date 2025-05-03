@@ -100,6 +100,15 @@ const AddOrderPage: NextPage = () => {
         enabled: !!selectedBookingId,
     });
 
+    const updateBooking = async (status: Booking["status"]) => {
+        if (!selectedBookingId) return;
+        const response = await axiosInstance.patch(
+            `/bookings/${selectedBookingId}`,
+            { status }
+        );
+        return response.data;
+    };
+
     const { mutate, isPending } = useMutation({
         mutationFn: async (data: OrderForm) => {
             const response = await axiosInstance.post("/orders", data);
@@ -110,6 +119,7 @@ const AddOrderPage: NextPage = () => {
             queryClient.invalidateQueries({
                 queryKey: ["active-bookings"],
             });
+            updateBooking("COMPLETED");
             toast.success("Pesanan berhasil ditambahkan!");
             router.push("/admin/orders");
         },
