@@ -18,3 +18,13 @@ export function verifyToken(token: string) {
         return null;
     }
 }
+
+export function getTokenExpiration(token: string): number | null {
+    try {
+        const decoded = jwt.decode(token) as { exp: number };
+        return decoded.exp;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}

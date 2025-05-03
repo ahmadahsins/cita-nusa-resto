@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 const Profile: NextPage = () => {
     const router = useRouter();
     const { isAuthenticated, isHydrated } = useAuth();
+    const [isTabShow, setIsTabShow] = useState(false);
 
     // Fetch user profile data
     const {
@@ -35,7 +36,11 @@ const Profile: NextPage = () => {
                 "/auth/login?callbackUrl=" + encodeURIComponent("/profile")
             );
         }
-    }, [isAuthenticated, isHydrated, router]);
+
+        if (isHydrated && isAuthenticated && user?.role === "CUSTOMER") {
+            setIsTabShow(true);
+        }
+    }, [isAuthenticated, isHydrated, router, user]);
 
     if (isLoading) {
         return (
@@ -76,7 +81,7 @@ const Profile: NextPage = () => {
                     </div>
 
                     {/* Profile Navigation Tabs */}
-                    {isHydrated && user?.role === "CUSTOMER" && (
+                    {isTabShow && (
                         <div className="flex flex-wrap justify-center mb-8 gap-4">
                             <Link
                                 href="/profile"

@@ -1,15 +1,34 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { User, LogOut, Menu, X } from "lucide-react";
 import { playfair } from "@/pages/_app";
 import toast from "react-hot-toast";
 
 const Header: React.FC = () => {
-    const { isAuthenticated, user, logout } = useAuthStore();
+    const { isAuthenticated, user, logout, checkAuth } = useAuthStore();
     const router = useRouter();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    // Cek autentikasi setiap kali komponen di-render
+    useEffect(() => {
+        // Validasi token saat komponen dimuat
+        const isValid = checkAuth();
+        if (!isValid && isAuthenticated) {
+            toast.error("Sesi anda telah berakhir. Silakan login kembali.");
+            logout();
+
+            // Redirect ke halaman login jika di halaman yang memerlukan autentikasi
+            const authRequiredPaths = ["/profile", "/admin", "/booking/new"];
+            const requiresAuth = authRequiredPaths.some((path) =>
+                router.pathname.startsWith(path)
+            );
+            if (requiresAuth) {
+                router.push("/auth/login");
+            }
+        }
+    }, [router.pathname]);
 
     const handleLogout = () => {
         logout();

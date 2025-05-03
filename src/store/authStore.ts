@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -15,7 +16,8 @@ interface AuthState {
     isAuthenticated: boolean;
     login: (user: User, token: string) => void;
     logout: () => void;
-    updateUser: (userData: Partial<User>) => void; // Fungsi baru
+    updateUser: (userData: Partial<User>) => void;
+    checkAuth: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,9 +37,46 @@ export const useAuthStore = create<AuthState>()(
                     });
                 }
             },
+            checkAuth: () => {
+                const token = get().token;
+
+                if (!token) {
+                    set({ isAuthenticated: false });
+                    return false;
+                }
+
+                try {
+                    // Dekode token untuk mendapatkan waktu kedaluwarsa
+                    const decoded = jwtDecode(token) as { exp: number };
+                    const currentTime = Date.now() / 1000;
+
+                    // Jika token kedaluwarsa
+                    if (decoded.exp < currentTime) {
+                        // Logout user jika token kedaluwarsa
+                        set({
+                            user: null,
+                            token: null,
+                            isAuthenticated: false,
+                        });
+                        return false;
+                    }
+
+                    return true;
+                } catch (error) {
+                    // Token tidak valid, logout user
+                    console.log(error);
+                    set({ user: null, token: null, isAuthenticated: false });
+                    return false;
+                }
+            },
         }),
         {
             name: "auth-storage",
+            onRehydrateStorage: () => (state) => {
+                if (state) {
+                    state.checkAuth();
+                }
+            },
         }
     )
 );
