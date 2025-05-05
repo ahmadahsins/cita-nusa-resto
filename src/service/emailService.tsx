@@ -7,6 +7,7 @@ interface SendBookingConfirmationParams {
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const emailDev = process.env.EMAIL_DEV;
 
 export async function sendBookingConfirmationEmail({
     booking,
@@ -28,7 +29,7 @@ export async function sendBookingConfirmationEmail({
         const emailTo =
             process.env.NODE_ENV === "production"
                 ? user.email
-                : "ahmadahsin006@gmail.com"; // Ganti dengan email Anda
+                : emailDev;
 
         const data = await resend.emails.send({
             to: emailTo,

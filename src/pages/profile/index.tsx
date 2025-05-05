@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,7 +13,6 @@ import { useAuth } from "@/hooks/useAuth";
 const Profile: NextPage = () => {
     const router = useRouter();
     const { isAuthenticated, isHydrated } = useAuth();
-    const [isTabShow, setIsTabShow] = useState(false);
 
     // Fetch user profile data
     const {
@@ -36,13 +35,10 @@ const Profile: NextPage = () => {
                 "/auth/login?callbackUrl=" + encodeURIComponent("/profile")
             );
         }
+    }, [isAuthenticated, isHydrated, router]);
 
-        if (isHydrated && isAuthenticated && user?.role === "CUSTOMER") {
-            setIsTabShow(true);
-        }
-    }, [isAuthenticated, isHydrated, router, user]);
-
-    if (isLoading) {
+    // Show loader while fetching data
+    if (isLoading || !isHydrated) {
         return (
             <Layout>
                 <div className="flex justify-center items-center min-h-screen bg-amber-50">
@@ -56,6 +52,9 @@ const Profile: NextPage = () => {
             </Layout>
         );
     }
+
+    // Determine if tabs should be shown - any customer should see the tabs
+    const isCustomer = user?.role === "CUSTOMER";
 
     return (
         <Layout>
@@ -81,7 +80,7 @@ const Profile: NextPage = () => {
                     </div>
 
                     {/* Profile Navigation Tabs */}
-                    {isTabShow && (
+                    {isCustomer && (
                         <div className="flex flex-wrap justify-center mb-8 gap-4">
                             <Link
                                 href="/profile"
@@ -125,6 +124,11 @@ const Profile: NextPage = () => {
                                         <p className="text-amber-700">
                                             {user?.email || "email@example.com"}
                                         </p>
+                                        {user?.role && (
+                                            <p className="text-amber-600 text-sm mt-1">
+                                                {user.role === "CUSTOMER" ? "Pelanggan" : user.role}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </div>

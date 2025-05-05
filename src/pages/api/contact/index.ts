@@ -4,6 +4,7 @@ import { z } from "zod";
 
 // Initialize Resend with your API key
 const resend = new Resend(process.env.RESEND_API_KEY);
+const emailDev = process.env.EMAIL_DEV;
 
 // Validation schema
 const contactSchema = z.object({
@@ -30,7 +31,7 @@ export default async function handler(
         // Send email using Resend
         const { data, error } = await resend.emails.send({
             from: process.env.EMAIL_FROM!,
-            to: "ahmadahsin006@gmail.com",
+            to: emailDev!,
             replyTo: email,
             subject: `[Contact Form] ${subject}`,
             html: `

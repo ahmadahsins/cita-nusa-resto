@@ -3,10 +3,12 @@ import axiosInstance from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
@@ -29,6 +31,8 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register: NextPage = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
     const { login } = useAuthStore();
 
@@ -139,38 +143,49 @@ const Register: NextPage = () => {
                             )}
                         </div>
 
-                        <div className="mb-4">
+                        <div className="relative mb-4">
                             <label
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                type="password"
-                                autoComplete="new-password"
-                                {...register("password")}
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                            />
-                            {formState.errors.password && (
-                                <p className="mt-1 text-sm text-red-600">
-                                    {formState.errors.password.message}
-                                </p>
+                            <div>
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    autoComplete="new-password"
+                                    {...register("password")}
+                                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+                                    placeholder="Password"
+                                />
+                                {formState.errors.password && (
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {formState.errors.password.message}
+                                    </p>
+                                )}
+                            </div>
+                            <button type="button" onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute top-8 right-2 z-10">
+                            {showPassword ? (
+                                <EyeOff className="w-5 h-5" />
+                            ) : (
+                                <Eye className="w-5 h-5" />
                             )}
+                            </button>
                         </div>
 
-                        <div className="mb-4">
+                        <div className="relative mb-4">
                             <label
                                 htmlFor="confirmPassword"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Konfirmasi Password
                             </label>
+                            <div>
                             <input
                                 id="confirmPassword"
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 autoComplete="new-password"
                                 {...register("confirmPassword")}
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
@@ -181,6 +196,15 @@ const Register: NextPage = () => {
                                     {formState.errors.confirmPassword.message}
                                 </p>
                             )}
+                            </div>
+                            <button type="button" onClick={() => setShowConfirmPassword((prev) => !prev)}
+                            className="absolute top-8 right-2 z-10">
+                            {showConfirmPassword ? (
+                                <EyeOff className="w-5 h-5" />
+                            ) : (
+                                <Eye className="w-5 h-5" />
+                            )}
+                            </button>
                         </div>
                     </div>
 

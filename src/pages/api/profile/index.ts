@@ -16,6 +16,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
                     name: true,
                     email: true,
                     phone: true,
+                    role: true,
                     // Pilih field yang ingin ditampilkan
                 },
             });

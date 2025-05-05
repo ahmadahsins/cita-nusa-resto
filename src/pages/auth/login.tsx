@@ -10,6 +10,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginSchema = z.object({
     email: z.string().email("Email tidak valid"),
@@ -19,6 +21,7 @@ const LoginSchema = z.object({
 type LoginFormData = z.infer<typeof LoginSchema>;
 
 const Login: NextPage = () => {
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const { login } = useAuthStore();
 
@@ -78,15 +81,16 @@ const Login: NextPage = () => {
                                 </p>
                             )}
                         </div>
-                        <div className="mb-4">
+                        <div className="relative mb-4">
                             <label
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 mb-1"
                             >
                                 Password
                             </label>
+                            <div>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 id="password"
                                 autoComplete="current-password"
                                 {...register("password")}
@@ -97,6 +101,15 @@ const Login: NextPage = () => {
                                     {formState.errors.password.message}
                                 </p>
                             )}
+                            </div>
+                            <button type="button" onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute top-8 right-2 z-10">
+                            {showPassword ? (
+                                <EyeOff className="w-5 h-5" />
+                            ) : (
+                                <Eye className="w-5 h-5" />
+                            )}
+                            </button>
                         </div>
 
                         <div>
