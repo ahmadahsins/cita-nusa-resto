@@ -1,4 +1,5 @@
 import { MenuCategory } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { PrismaClient } = require("@prisma/client");
@@ -7,6 +8,9 @@ const prisma = new PrismaClient();
 
 async function main() {
     console.log("🌱 Seeding database...");
+
+    // Seed users
+    await seedUsers();
 
     // Seed menu categories
     const categories = await seedMenuCategories();
@@ -19,6 +23,52 @@ async function main() {
 
     console.log("✅ Seeding completed!");
 }
+
+async function seedUsers() {
+    console.log('Seeding users...');
+    
+    // Create admin user
+    const adminPassword = await hash('admin123', 10);
+    await prisma.user.upsert({
+      where: { email: 'admin@citanusa.com' },
+      update: {},
+      create: {
+        name: 'Admin Cita Nusa',
+        email: 'admin@citanusa.com',
+        password: adminPassword,
+        phone: '081234567890',
+        role: 'ADMIN',
+      },
+    });
+  
+    // Create staff user
+    const staffPassword = await hash('staff123', 10);
+    await prisma.user.upsert({
+      where: { email: 'staff@citanusa.com' },
+      update: {},
+      create: {
+        name: 'Staff Cita Nusa',
+        email: 'staff@citanusa.com',
+        password: staffPassword,
+        phone: '081234567891',
+        role: 'STAFF',
+      },
+    });
+  
+    // Create customer user
+    const customerPassword = await hash('customer123', 10);
+    await prisma.user.upsert({
+      where: { email: 'customer@example.com' },
+      update: {},
+      create: {
+        name: 'Pelanggan Setia',
+        email: 'customer@example.com',
+        password: customerPassword,
+        phone: '081234567892',
+        role: 'CUSTOMER',
+      },
+    });
+  }
 
 async function seedMenuCategories() {
     console.log("Seeding menu categories...");
