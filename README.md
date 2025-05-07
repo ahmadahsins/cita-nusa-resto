@@ -1,40 +1,192 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Cita Nusa Resto
 
-## Getting Started
+Sebuah aplikasi web fullstack untuk rumah makan "Cita Nusa Resto" dengan sistem pemesanan meja. Proyek ini dibuat sebagai showcase pribadi menggunakan NextJS dengan Pages Router dan berbagai teknologi modern.
 
-First, run the development server:
+## 📋 Daftar Isi
 
+- [Demo](#demo)
+- [Fitur](#fitur)
+- [Teknologi](#teknologi)
+- [Instalasi](#instalasi)
+- [Penggunaan](#penggunaan)
+- [Struktur Proyek](#struktur-proyek)
+- [API Endpoints](#api-endpoints)
+- [Kontribusi](#kontribusi)
+- [Lisensi](#lisensi)
+
+## 🚀 Demo
+
+[Link Demo akan ditambahkan setelah deployment]
+
+## ✨ Fitur
+
+- 🍽️ **Katalog Menu**: Tampilan menu makanan dan minuman yang menarik
+- 📅 **Sistem Pemesanan**: Reservasi meja dengan pilihan tanggal, waktu, dan jumlah tamu
+- 👤 **Manajemen Akun**: Registrasi, login, dan pengelolaan profil pengguna
+- 📧 **Notifikasi Email**: Konfirmasi pemesanan melalui email
+- 📱 **Responsif**: Tampilan yang optimal di berbagai perangkat
+- 🔐 **Admin Dashboard**: 
+  - Manajemen pengguna
+  - Manajemen menu
+  - Manajemen reservasi
+  - Manajemen pesanan
+  - Manajemen meja
+  - Visualisasi data menggunakan Recharts untuk melihat insight harian reservasi dan pesanan
+
+## 💻 Teknologi
+
+### Frontend
+- **Next.js** (Pages Router) - Framework React untuk rendering sisi server dan client
+- **TailwindCSS** - Framework CSS untuk desain yang cepat dan responsif
+- **React Hook Form & Zod** - Validasi dan pengelolaan formulir
+- **TanStack Query** - Manajemen state dan fetching data
+- **Zustand** - Manajemen state global
+- **React DatePicker** - Komponen pemilihan tanggal
+- **date-fns** - Utilitas manipulasi tanggal dan waktu
+- **Framer Motion** - Library untuk animasi UI
+- **Recharts** - Library untuk visualisasi data di dashboard admin
+
+### Backend
+- **Next.js API Routes** - Endpoint API REST
+- **Prisma** - ORM untuk interaksi database
+- **PostgreSQL** - Database relasional
+- **JSON Web Token** - Otentikasi pengguna
+- **Resend** - Layanan pengiriman email
+
+## 🔧 Instalasi
+
+### Prasyarat
+- Node.js (versi 18.x atau lebih tinggi)
+- NPM atau Yarn
+- PostgreSQL
+
+### Langkah-langkah
+1. Clone repositori:
+   ```bash
+   git clone https://github.com/username/cita-nusa-resto.git
+   cd cita-nusa-resto
+   ```
+
+2. Install dependensi:
+   ```bash
+   npm install
+   # atau
+   yarn install
+   ```
+
+3. Buat file .env dan konfigurasikan variabel lingkungan:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/citanusadb"
+   JWT_SECRET="your-secret-key"
+   RESEND_API_KEY="your-resend-api-key"
+   EMAIL_FROM="noreply@citanusaresto.com"
+   EMAIL_DEV="youremail@example.com"
+   NODE_ENV="development"
+   ```
+
+5. Jalankan migrasi database:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. Isi database dengan data dummy:
+   ```bash
+   npm run seed
+   ```
+
+## 🚀 Penggunaan
+
+### Mode Development
 ```bash
 npm run dev
-# or
+# atau
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000) di browser untuk melihat aplikasi.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Build untuk Production
+```bash
+npm run build
+npm start
+# atau
+yarn build
+yarn start
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## 📁 Struktur Proyek
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+```
+cita-nusa-resto/
+├── .next/              # Build output dari Next.js
+├── node_modules/       # Dependensi
+├── prisma/             # Schema Prisma dan migrations
+│   └── seed.ts         # Script pengisian data dummy
+├── public/             # File statis
+├── src/                # Source code
+│   ├── components/     # Komponen React yang dapat digunakan kembali
+│   ├── constants/      # Konstanta aplikasi
+│   ├── emails/         # Template email
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Utilitas dan helper functions
+│   ├── pages/          # Halaman dan API routes (Next.js Pages Router)
+│   │   ├── api/        # Backend API endpoints
+│   │   └── ...         # Frontend pages
+│   ├── service/        # Service layer
+│   │   └── emailService.tsx # Service untuk pengiriman email
+│   ├── store/          # State management (Zustand)
+│   ├── styles/         # File CSS global dan utilitas
+│   ├── types/          # Type definitions TypeScript
+│   └── utils/          # Fungsi utilitas
+├── .env                # Environment variables
+├── .gitignore
+├── components.json
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── tsconfig.json
+└── vercel.json
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📡 API Endpoints
 
-## Learn More
+### Autentikasi
+- `POST /api/auth/register` - Registrasi pengguna baru
+- `POST /api/auth/login` - Login pengguna
+- `GET /api/auth/me` - Dapatkan info pengguna yang sedang login
 
-To learn more about Next.js, take a look at the following resources:
+### Menu
+- `GET /api/menu` - Dapatkan semua menu
+- `GET /api/menu/[id]` - Dapatkan detail menu berdasarkan ID
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+### Booking
+- `POST /api/booking` - Buat reservasi baru
+- `GET /api/booking` - Dapatkan semua reservasi pengguna
+- `GET /api/booking/[id]` - Dapatkan detail reservasi
+- `PUT /api/booking/[id]` - Update reservasi
+- `DELETE /api/booking/[id]` - Batalkan reservasi
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Admin
+- `GET /api/admin/users` - Dapatkan daftar pengguna
+- `GET /api/admin/menu` - Dapatkan semua menu
+- `POST /api/admin/menu` - Tambah menu baru
+- `PUT /api/admin/menu/[id]` - Update menu
+- `DELETE /api/admin/menu/[id]` - Hapus menu
+- `GET /api/admin/reservations` - Dapatkan semua reservasi
+- `GET /api/admin/orders` - Dapatkan semua pesanan
+- `GET /api/admin/tables` - Dapatkan semua data meja
+- `GET /api/admin/dashboard` - Dapatkan data untuk statistik dashboard
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## 📝 Lisensi
+
+Didistribusikan di bawah Lisensi MIT. Lihat `LICENSE` untuk informasi lebih lanjut.
+
+---
+
+Dibuat dengan ❤️ oleh [Nama Anda]
