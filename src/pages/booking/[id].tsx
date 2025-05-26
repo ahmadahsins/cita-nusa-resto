@@ -32,19 +32,13 @@ const BookingDetailPage: NextPage = () => {
     const [showCancelModal, setShowCancelModal] = useState(false);
 
     // Fetch booking details
-    const {
-        data: booking,
-        isLoading,
-        error,
-        refetch,
-    } = useQuery({
+    const { data: booking, isLoading, error, refetch } = useQuery({
         queryKey: ["booking", id],
         queryFn: async () => {
             const response = await axiosInstance.get(`/bookings/${id}`);
             return response.data;
-        },
-        enabled: !!id && isAuthenticated && isHydrated,
-    });
+        }
+    })
 
     // Cancel booking mutation
     const cancelBookingMutation = useMutation({
